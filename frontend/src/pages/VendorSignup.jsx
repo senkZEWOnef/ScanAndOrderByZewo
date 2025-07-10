@@ -9,30 +9,44 @@ export default function VendorSignup() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+  const [slug, setSlug] = useState("");
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          business_name: businessName,
-        },
-      },
     });
-
-    setLoading(false);
 
     if (error) {
       setErrorMsg(error.message);
-    } else {
-      alert("Signup successful! Please check your email to confirm.");
-      navigate("/vendor-login");
+      setLoading(false);
+      return;
     }
+
+    // Insert vendor profile into separate table
+    const user = data.user;
+    const profileInsert = await supabase.from("vendor_profiles").insert([
+      {
+        id: user.id,
+        slug,
+        business_name: businessName,
+        contact_email: email,
+      },
+    ]);
+
+    if (profileInsert.error) {
+      setErrorMsg(profileInsert.error.message);
+      setLoading(false);
+      return;
+    }
+
+    alert("Signup successful! Please check your email to confirm.");
+    navigate("/vendor-login");
+    setLoading(false);
   };
 
   return (
@@ -49,6 +63,23 @@ export default function VendorSignup() {
             required
           />
         </div>
+
+        <div className="mb-3">
+          <label className="form-label">Business Slug (URL identifier)</label>
+          <input
+            type="text"
+            className="form-control"
+            value={slug}
+            onChange={(e) =>
+              setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-"))
+            }
+            required
+          />
+          <div className="form-text">
+            Example: “chickentruck” → yoursite.com/vendor/chickentruck
+          </div>
+        </div>
+
         <div className="mb-3">
           <label className="form-label">Email Address</label>
           <input
