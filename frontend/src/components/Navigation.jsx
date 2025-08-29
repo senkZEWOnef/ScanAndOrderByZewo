@@ -6,7 +6,7 @@ export default function Navigation() {
     <Navbar bg="dark" data-bs-theme="dark" expand="lg">
       <Container>
         <Navbar.Brand as={Link} to="/">
-          FoodTruck SaaS
+          <span className="fw-bold">Escanea <span className="text-warning">byZewo</span></span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
