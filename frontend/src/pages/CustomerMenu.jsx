@@ -302,60 +302,85 @@ export default function CustomerMenu() {
   }
 
   return (
-    <div className="min-vh-100" style={{ 
-      background: vendor?.primary_color && vendor?.secondary_color 
-        ? `linear-gradient(180deg, ${vendor.primary_color}15 0%, ${vendor.secondary_color}10 100%)` 
-        : 'linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%)' 
-    }}>
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky-top">
-        <div className="container-fluid px-3 py-4" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <div className="min-vh-100" style={{ backgroundColor: 'var(--color-gray-50)' }}>
+      {/* Professional Header */}
+      <div className="bg-white sticky-top" style={{ borderBottom: '1px solid var(--color-gray-200)', boxShadow: 'var(--shadow-sm)' }}>
+        <div className="container-modern py-6" style={{ maxWidth: "640px" }}>
           <div className="text-center">
             {/* Business Logo */}
-            {vendor?.logo_url ? (
-              <div className="mb-3">
+            <div className="mb-4">
+              {vendor?.logo_url ? (
                 <img
                   src={vendor.logo_url}
                   alt={`${vendor.business_name} Logo`}
-                  className="rounded-3 shadow-sm"
                   style={{ 
-                    width: '80px', 
-                    height: '80px', 
+                    width: '88px', 
+                    height: '88px', 
                     objectFit: 'contain',
-                    border: `3px solid ${vendor?.primary_color || '#007bff'}`
+                    borderRadius: 'var(--radius-xl)',
+                    border: '3px solid var(--color-primary)'
                   }}
                 />
-              </div>
-            ) : (
-              <div className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                   style={{ 
-                     width: '70px', 
-                     height: '70px',
-                     background: vendor?.primary_color && vendor?.secondary_color 
-                       ? `linear-gradient(45deg, ${vendor.primary_color}, ${vendor.secondary_color})` 
-                       : 'linear-gradient(45deg, #007bff, #6f42c1)'
-                   }}>
-                <span className="text-white fs-2">🍽️</span>
-              </div>
-            )}
-            <h1 className="h2 fw-bold text-dark mb-2">{vendor.business_name}</h1>
+              ) : (
+                <div style={{ 
+                  width: '88px', 
+                  height: '88px',
+                  backgroundColor: 'var(--color-primary)',
+                  borderRadius: 'var(--radius-xl)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto'
+                }}>
+                  <span style={{ color: 'white', fontSize: '2rem' }}>🍽️</span>
+                </div>
+              )}
+            </div>
+            
+            <h1 className="heading-2-modern mb-3">{vendor.business_name}</h1>
+            
             {vendor?.description && (
-              <p className="text-muted mb-3">{vendor.description}</p>
+              <p className="text-muted-modern mb-4" style={{ fontSize: 'var(--text-lg)' }}>{vendor.description}</p>
             )}
-            <p className="text-muted small mb-3">📱 Scan • 🛒 Order • 💳 Pay • 🎯 Pickup</p>
-            <div className="d-flex justify-content-center gap-2 mt-3 flex-wrap">
-              <div className="badge" style={{ backgroundColor: vendor?.accent_color || '#28a745' }}>
+            
+            <div className="d-flex justify-content-center align-items-center gap-3 mb-4 flex-wrap" style={{ fontSize: 'var(--text-sm)', color: 'var(--color-gray-500)' }}>
+              <div className="d-flex align-items-center gap-1">
+                <span>📱</span>
+                <span>Scan</span>
+              </div>
+              <div style={{ width: '4px', height: '4px', backgroundColor: 'var(--color-gray-400)', borderRadius: '50%' }}></div>
+              <div className="d-flex align-items-center gap-1">
+                <span>🛒</span>
+                <span>Order</span>
+              </div>
+              <div style={{ width: '4px', height: '4px', backgroundColor: 'var(--color-gray-400)', borderRadius: '50%' }}></div>
+              <div className="d-flex align-items-center gap-1">
+                <span>💳</span>
+                <span>Pay</span>
+              </div>
+              <div style={{ width: '4px', height: '4px', backgroundColor: 'var(--color-gray-400)', borderRadius: '50%' }}></div>
+              <div className="d-flex align-items-center gap-1">
+                <span>🎯</span>
+                <span>Pickup</span>
+              </div>
+            </div>
+            
+            <div className="d-flex justify-content-center gap-3 mb-4 flex-wrap">
+              <div className="badge-modern badge-success-modern">
                 ⚡ Ready in 15-20 min
               </div>
-              <div className="badge bg-success">💳 Secure Payment</div>
-              <div className="badge" style={{ backgroundColor: vendor?.primary_color || '#007bff' }}>
+              <div className="badge-modern badge-info-modern">
+                💳 Secure Payment
+              </div>
+              <div className="badge-modern badge-info-modern">
                 📱 Mobile Ordering
               </div>
             </div>
+            
             {/* Cuisine Type Badge */}
             {vendor?.cuisine_type && (
-              <div className="mt-2">
-                <span className="badge bg-light text-dark fs-6">
+              <div>
+                <span className="badge-modern" style={{ backgroundColor: 'var(--color-gray-200)', color: 'var(--color-gray-700)' }}>
                   {vendor.cuisine_type === 'mexican' && '🌮 Mexican Cuisine'}
                   {vendor.cuisine_type === 'american' && '🍔 American Food'}
                   {vendor.cuisine_type === 'italian' && '🍝 Italian Kitchen'}
@@ -375,34 +400,32 @@ export default function CustomerMenu() {
         </div>
       </div>
 
-      <div className="container-fluid px-3 py-4" style={{ maxWidth: "600px", margin: "0 auto" }}>
+      <div className="container-modern py-6" style={{ maxWidth: "640px" }}>
 
         {/* Cart Summary (sticky) */}
         {cart.length > 0 && (
-          <div className="position-fixed bottom-0 start-0 w-100 p-3" style={{ zIndex: 1050 }}>
-            <div className="container-fluid" style={{ maxWidth: "600px", margin: "0 auto" }}>
-              <div className="card border-0 shadow-lg" 
+          <div className="position-fixed bottom-0 start-0 w-100 p-4" style={{ zIndex: 1050 }}>
+            <div className="container-modern" style={{ maxWidth: "640px" }}>
+              <div className="card-modern" 
                    style={{ 
-                     borderRadius: '20px', 
-                     background: vendor?.primary_color && vendor?.secondary_color 
-                       ? `linear-gradient(45deg, ${vendor.primary_color}, ${vendor.secondary_color})` 
-                       : 'linear-gradient(45deg, #28a745, #20c997)'
+                     backgroundColor: 'var(--color-success)',
+                     border: 'none',
+                     boxShadow: 'var(--shadow-xl)'
                    }}>
-                <div className="card-body p-3">
+                <div className="p-4">
                   <div className="d-flex justify-content-between align-items-center">
                     <div className="text-white">
-                      <div className="fw-bold fs-4">${getCartTotal().toFixed(2)}</div>
-                      <div className="small opacity-90">{getCartItemCount()} {getCartItemCount() === 1 ? 'item' : 'items'} in cart</div>
+                      <div className="fw-bold" style={{ fontSize: 'var(--text-2xl)' }}>${getCartTotal().toFixed(2)}</div>
+                      <div style={{ fontSize: 'var(--text-sm)', opacity: 0.9 }}>{getCartItemCount()} {getCartItemCount() === 1 ? 'item' : 'items'} in cart</div>
                     </div>
                     <button 
-                      className="btn btn-light btn-lg fw-bold px-4 shadow-sm"
+                      className="btn-modern btn-lg-modern fw-bold"
                       style={{ 
-                        borderRadius: '15px',
-                        border: `2px solid ${vendor?.accent_color || '#ffffff'}`,
-                        transform: 'scale(1)'
+                        backgroundColor: 'white',
+                        color: 'var(--color-success)',
+                        border: '2px solid white',
+                        padding: 'var(--space-3) var(--space-6)'
                       }}
-                      onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-                      onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
                       onClick={() => setShowCartModal(true)}
                     >
                       View Cart 🛒
@@ -415,40 +438,44 @@ export default function CustomerMenu() {
         )}
 
         {/* Category Filter Tabs */}
-        <div className="mb-4">
-          <div className="row g-2">
+        <div className="mb-6">
+          <div className="nav-tabs-modern">
             {[
-              { id: 'all', name: '🍽️ All', emoji: '' },
-              { id: 'mains', name: '🍔 Mains', emoji: '' },
-              { id: 'appetizers', name: '🥗 Appetizers', emoji: '' },
-              { id: 'sides', name: '🍟 Sides', emoji: '' },
-              { id: 'drinks', name: '🥤 Drinks', emoji: '' },
-              { id: 'desserts', name: '🍰 Desserts', emoji: '' }
+              { id: 'all', name: 'All' },
+              { id: 'mains', name: 'Mains' },
+              { id: 'appetizers', name: 'Appetizers' },
+              { id: 'sides', name: 'Sides' },
+              { id: 'drinks', name: 'Drinks' },
+              { id: 'desserts', name: 'Desserts' }
             ].map(category => (
-              <div key={category.id} className="col-4 col-md-2">
-                <button
-                  className={`btn w-100 fw-semibold ${
-                    selectedCategory === category.id ? 'btn-primary' : 'btn-outline-secondary'
-                  }`}
-                  style={{ borderRadius: '12px', fontSize: '12px' }}
-                  onClick={() => setSelectedCategory(category.id)}
-                >
-                  {category.name}
-                </button>
-              </div>
+              <button
+                key={category.id}
+                className={`nav-tab-modern ${selectedCategory === category.id ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(category.id)}
+              >
+                {category.name}
+              </button>
             ))}
           </div>
         </div>
 
         {/* Menu Items by Category */}
         {menuItems.length === 0 ? (
-          <div className="text-center py-5">
-            <div className="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                 style={{ width: '100px', height: '100px' }}>
-              <span className="text-muted fs-1">🍽️</span>
+          <div className="text-center py-12">
+            <div style={{ 
+              width: '120px', 
+              height: '120px',
+              backgroundColor: 'var(--color-gray-100)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto var(--space-6) auto'
+            }}>
+              <span style={{ fontSize: '3rem' }}>🍽️</span>
             </div>
-            <h4 className="text-muted">Menu Coming Soon!</h4>
-            <p className="text-muted">Check back later for delicious options</p>
+            <h2 className="heading-3-modern text-muted-modern mb-3">Menu Coming Soon!</h2>
+            <p className="text-muted-modern">Check back later for delicious options</p>
           </div>
         ) : (
           (() => {
@@ -476,18 +503,11 @@ export default function CustomerMenu() {
                     </div>
                   )}
                   
-                  <div className="row g-3">
+                  <div className="ipad-card-grid">
                     {categoryItems.map((item) => (
-                      <div key={item.id} className="col-lg-4 col-md-6 col-sm-6 col-12">
-                        <div className="card border-0 shadow-sm h-100" 
-                             style={{ 
-                               borderRadius: '16px', 
-                               transition: 'all 0.3s ease',
-                               cursor: 'pointer',
-                               transform: 'scale(1)'
-                             }}
-                             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                             onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      <div key={item.id} className="fade-in-modern">
+                        <div className="card-modern hover-lift-modern h-100" 
+                             style={{ cursor: 'pointer' }}
                              onClick={() => handleItemClick(item)}
                         >
                           {/* Image */}
@@ -496,44 +516,49 @@ export default function CustomerMenu() {
                               <img
                                 src={item.image_url}
                                 alt={item.name}
-                                className="card-img-top"
                                 style={{ 
-                                  height: "160px", 
+                                  width: '100%',
+                                  height: "180px", 
                                   objectFit: "cover",
-                                  borderRadius: '16px 16px 0 0'
+                                  borderRadius: 'var(--radius-xl) var(--radius-xl) 0 0'
                                 }}
                               />
                             ) : (
                               <div
-                                className="card-img-top d-flex align-items-center justify-content-center"
                                 style={{ 
-                                  height: "160px",
-                                  background: vendor?.primary_color && vendor?.secondary_color 
-                                    ? `linear-gradient(45deg, ${vendor.primary_color}15, ${vendor.secondary_color}15)` 
-                                    : 'linear-gradient(45deg, #e9ecef, #f8f9fa)',
-                                  borderRadius: '16px 16px 0 0'
+                                  width: '100%',
+                                  height: "180px",
+                                  backgroundColor: 'var(--color-gray-100)',
+                                  borderRadius: 'var(--radius-xl) var(--radius-xl) 0 0',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
                                 }}
                               >
-                                <span className="fs-1">🍽️</span>
+                                <span style={{ fontSize: '3rem' }}>🍽️</span>
                               </div>
                             )}
                             
                             {/* Badges */}
-                            <div className="position-absolute top-0 start-0 p-2">
-                              <span className="badge" style={{ 
-                                backgroundColor: vendor?.accent_color || '#ffc107',
-                                fontSize: '10px'
-                              }}>
+                            <div className="position-absolute" style={{ top: 'var(--space-3)', left: 'var(--space-3)' }}>
+                              <span className="badge-modern badge-success-modern">
                                 Fresh
                               </span>
                             </div>
                             
                             {/* Cart Quantity Badge */}
                             {getCartItemQuantity(item.id) > 0 && (
-                              <div className="position-absolute top-0 end-0 p-2">
-                                <div className="bg-success rounded-circle d-flex align-items-center justify-content-center"
-                                     style={{ width: '28px', height: '28px' }}>
-                                  <span className="text-white fw-bold" style={{ fontSize: '14px' }}>
+                              <div className="position-absolute" style={{ top: 'var(--space-3)', right: 'var(--space-3)' }}>
+                                <div style={{ 
+                                  width: '32px', 
+                                  height: '32px',
+                                  backgroundColor: 'var(--color-success)',
+                                  borderRadius: '50%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}>
+                                  <span style={{ color: 'white', fontWeight: 'var(--font-bold)', fontSize: 'var(--text-sm)' }}>
                                     {getCartItemQuantity(item.id)}
                                   </span>
                                 </div>
@@ -541,37 +566,39 @@ export default function CustomerMenu() {
                             )}
 
                             {/* Price Badge */}
-                            <div className="position-absolute bottom-0 end-0 p-2">
-                              <span className="badge fs-6 fw-bold px-2 py-1 text-white" 
-                                    style={{ 
-                                      backgroundColor: vendor?.primary_color || '#28a745',
-                                      borderRadius: '8px'
-                                    }}>
+                            <div className="position-absolute" style={{ bottom: 'var(--space-3)', right: 'var(--space-3)' }}>
+                              <span className="badge-modern" style={{ 
+                                backgroundColor: 'var(--color-success)',
+                                color: 'white',
+                                fontSize: 'var(--text-sm)',
+                                fontWeight: 'var(--font-bold)'
+                              }}>
                                 ${item.price.toFixed(2)}
                               </span>
                             </div>
                           </div>
                           
                           {/* Content */}
-                          <div className="card-body p-3">
-                            <h6 className="card-title fw-bold mb-2 text-dark" 
+                          <div className="p-4">
+                            <h3 className="fw-bold mb-2" 
                                 style={{ 
-                                  fontSize: '16px',
-                                  lineHeight: '1.2',
-                                  height: '2.4em',
+                                  fontSize: 'var(--text-lg)',
+                                  lineHeight: '1.3',
+                                  color: 'var(--color-gray-800)',
+                                  height: '2.6em',
                                   overflow: 'hidden',
                                   display: '-webkit-box',
                                   WebkitLineClamp: '2',
                                   WebkitBoxOrient: 'vertical'
                                 }}>
                               {item.name}
-                            </h6>
+                            </h3>
                             
-                            <p className="card-text text-muted small mb-3" 
+                            <p className="text-muted-modern mb-4" 
                                style={{ 
-                                 fontSize: '12px',
-                                 lineHeight: '1.3',
-                                 height: '3.9em',
+                                 fontSize: 'var(--text-sm)',
+                                 lineHeight: '1.4',
+                                 height: '4.2em',
                                  overflow: 'hidden',
                                  display: '-webkit-box',
                                  WebkitLineClamp: '3',
@@ -585,7 +612,7 @@ export default function CustomerMenu() {
                               {/* Category Badge */}
                               <div>
                                 {item.category && (
-                                  <span className="badge bg-light text-dark" style={{ fontSize: '9px' }}>
+                                  <span className="badge-modern" style={{ backgroundColor: 'var(--color-gray-200)', color: 'var(--color-gray-600)' }}>
                                     {item.category}
                                   </span>
                                 )}
@@ -593,21 +620,13 @@ export default function CustomerMenu() {
                               
                               {/* Add Button */}
                               <button
-                                className="btn btn-sm fw-bold text-white px-3"
-                                style={{ 
-                                  background: vendor?.primary_color && vendor?.secondary_color 
-                                    ? `linear-gradient(45deg, ${vendor.primary_color}, ${vendor.secondary_color})` 
-                                    : 'linear-gradient(45deg, #007bff, #6f42c1)',
-                                  borderRadius: '20px',
-                                  border: 'none',
-                                  fontSize: '11px'
-                                }}
+                                className="btn-modern btn-primary-modern fw-bold"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleItemClick(item);
                                 }}
                               >
-                                + Add
+                                Add
                               </button>
                             </div>
                           </div>

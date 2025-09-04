@@ -240,144 +240,105 @@ export default function VendorDashboard() {
   };
 
   return (
-    <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
-      {/* Modern Header */}
-      <div className="bg-white shadow-sm">
-        <div className="container-fluid px-4 py-4">
-          <div className="row align-items-center">
-            <div className="col-lg-6">
-              <div className="d-flex align-items-center">
-                <div className="bg-primary rounded-3 d-flex align-items-center justify-content-center me-3"
-                     style={{ width: '50px', height: '50px' }}>
-                  <span className="text-white fs-4">🚀</span>
-                </div>
-                <div>
-                  <h3 className="mb-0 fw-bold text-dark">{vendorProfile?.business_name || 'Dashboard'}</h3>
-                  <p className="mb-0 text-muted">Welcome back, {user?.email}</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-6 text-end">
-              <div className="d-flex align-items-center justify-content-end gap-3">
-                <div className="text-end">
-                  <div className="small text-muted">Status</div>
-                  <span className="badge bg-success">🟢 Online</span>
-                </div>
-                <button 
-                  className="btn btn-outline-secondary"
-                  onClick={() => supabase.auth.signOut()}
-                >
-                  Sign Out
-                </button>
-              </div>
-            </div>
+    <div className="min-vh-100" style={{ backgroundColor: 'var(--color-gray-50)' }}>
+      {/* Professional Header */}
+      <div className="ipad-status-bar">
+        <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center justify-content-center me-3"
+               style={{ 
+                 width: '48px', 
+                 height: '48px',
+                 backgroundColor: 'var(--color-primary)',
+                 borderRadius: 'var(--radius-xl)'
+               }}>
+            <span className="text-white fs-4">📊</span>
           </div>
+          <div>
+            <h1 className="heading-3-modern mb-0">{vendorProfile?.business_name || 'Dashboard'}</h1>
+            <p className="text-muted-modern text-small-modern mb-0">{user?.email}</p>
+          </div>
+        </div>
+        <div className="d-flex align-items-center gap-3">
+          <div className="status-indicator-modern status-online-modern">
+            <div style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-success)', borderRadius: '50%' }}></div>
+            <span>Online</span>
+          </div>
+          <button 
+            className="btn-modern btn-secondary-modern"
+            onClick={() => supabase.auth.signOut()}
+          >
+            Sign Out
+          </button>
         </div>
       </div>
 
-      <div className="container-fluid px-4 py-4">
-        {/* Modern Tab Navigation */}
-        <div className="row mb-4">
-          <div className="col-12">
-            <div className="card border-0 shadow-sm" style={{ borderRadius: '16px' }}>
-              <div className="card-body p-0">
-                <div className="nav nav-pills nav-fill" style={{ borderRadius: '16px' }}>
-                  <button 
-                    className={`nav-link border-0 py-3 ${activeTab === 'dashboard' ? 'active' : ''}`}
-                    style={{ 
-                      borderRadius: '16px 0 0 16px',
-                      background: activeTab === 'dashboard' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
-                      color: activeTab === 'dashboard' ? 'white' : '#6c757d'
-                    }}
-                    onClick={() => setActiveTab('dashboard')}
-                  >
-                    <div className="d-flex flex-column align-items-center">
-                      <span className="fs-4 mb-1">📊</span>
-                      <span className="fw-semibold small">Dashboard</span>
-                    </div>
-                  </button>
-                  <button 
-                    className={`nav-link border-0 py-3 ${activeTab === 'orders' ? 'active' : ''}`}
-                    style={{ 
-                      background: activeTab === 'orders' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
-                      color: activeTab === 'orders' ? 'white' : '#6c757d'
-                    }}
-                    onClick={() => setActiveTab('orders')}
-                  >
-                    <div className="d-flex flex-column align-items-center">
-                      <span className="fs-4 mb-1">📋</span>
-                      <span className="fw-semibold small">Orders</span>
-                    </div>
-                  </button>
-                  <button 
-                    className={`nav-link border-0 py-3 ${activeTab === 'cashier' ? 'active' : ''}`}
-                    style={{ 
-                      background: activeTab === 'cashier' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
-                      color: activeTab === 'cashier' ? 'white' : '#6c757d'
-                    }}
-                    onClick={() => setActiveTab('cashier')}
-                  >
-                    <div className="d-flex flex-column align-items-center">
-                      <span className="fs-4 mb-1">💳</span>
-                      <span className="fw-semibold small">Cashier</span>
-                    </div>
-                  </button>
-                  <button 
-                    className={`nav-link border-0 py-3 ${activeTab === 'menu' ? 'active' : ''}`}
-                    style={{ 
-                      background: activeTab === 'menu' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
-                      color: activeTab === 'menu' ? 'white' : '#6c757d'
-                    }}
-                    onClick={() => setActiveTab('menu')}
-                  >
-                    <div className="d-flex flex-column align-items-center">
-                      <span className="fs-4 mb-1">🍽️</span>
-                      <span className="fw-semibold small">Menu</span>
-                    </div>
-                  </button>
-                  <button 
-                    className={`nav-link border-0 py-3 ${activeTab === 'customize' ? 'active' : ''}`}
-                    style={{ 
-                      background: activeTab === 'customize' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
-                      color: activeTab === 'customize' ? 'white' : '#6c757d'
-                    }}
-                    onClick={() => setActiveTab('customize')}
-                  >
-                    <div className="d-flex flex-column align-items-center">
-                      <span className="fs-4 mb-1">🎨</span>
-                      <span className="fw-semibold small">Customize</span>
-                    </div>
-                  </button>
-                  <button 
-                    className={`nav-link border-0 py-3 ${activeTab === 'hardware' ? 'active' : ''}`}
-                    style={{ 
-                      background: activeTab === 'hardware' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
-                      color: activeTab === 'hardware' ? 'white' : '#6c757d'
-                    }}
-                    onClick={() => setActiveTab('hardware')}
-                  >
-                    <div className="d-flex flex-column align-items-center">
-                      <span className="fs-4 mb-1">💰</span>
-                      <span className="fw-semibold small">Hardware</span>
-                    </div>
-                  </button>
-                  <button 
-                    className={`nav-link border-0 py-3 ${activeTab === 'qr' ? 'active' : ''}`}
-                    style={{ 
-                      borderRadius: '0 16px 16px 0',
-                      background: activeTab === 'qr' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
-                      color: activeTab === 'qr' ? 'white' : '#6c757d'
-                    }}
-                    onClick={() => setActiveTab('qr')}
-                  >
-                    <div className="d-flex flex-column align-items-center">
-                      <span className="fs-4 mb-1">📱</span>
-                      <span className="fw-semibold small">QR Code</span>
-                    </div>
-                  </button>
-                </div>
+      <div className="container-modern py-6">
+        {/* Professional Tab Navigation */}
+        <div className="card-modern mb-6">
+          <div className="nav-tabs-modern">
+            <button 
+              className={`nav-tab-modern ${activeTab === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dashboard')}
+            >
+              <div className="d-flex align-items-center gap-2">
+                <span className="fs-5">📊</span>
+                <span>Dashboard</span>
               </div>
-            </div>
+            </button>
+            <button 
+              className={`nav-tab-modern ${activeTab === 'orders' ? 'active' : ''}`}
+              onClick={() => setActiveTab('orders')}
+            >
+              <div className="d-flex align-items-center gap-2">
+                <span className="fs-5">📋</span>
+                <span>Orders</span>
+              </div>
+            </button>
+            <button 
+              className={`nav-tab-modern ${activeTab === 'cashier' ? 'active' : ''}`}
+              onClick={() => setActiveTab('cashier')}
+            >
+              <div className="d-flex align-items-center gap-2">
+                <span className="fs-5">💳</span>
+                <span>Cashier</span>
+              </div>
+            </button>
+            <button 
+              className={`nav-tab-modern ${activeTab === 'menu' ? 'active' : ''}`}
+              onClick={() => setActiveTab('menu')}
+            >
+              <div className="d-flex align-items-center gap-2">
+                <span className="fs-5">🍽️</span>
+                <span>Menu</span>
+              </div>
+            </button>
+            <button 
+              className={`nav-tab-modern ${activeTab === 'customize' ? 'active' : ''}`}
+              onClick={() => setActiveTab('customize')}
+            >
+              <div className="d-flex align-items-center gap-2">
+                <span className="fs-5">🎨</span>
+                <span>Customize</span>
+              </div>
+            </button>
+            <button 
+              className={`nav-tab-modern ${activeTab === 'hardware' ? 'active' : ''}`}
+              onClick={() => setActiveTab('hardware')}
+            >
+              <div className="d-flex align-items-center gap-2">
+                <span className="fs-5">💰</span>
+                <span>Hardware</span>
+              </div>
+            </button>
+            <button 
+              className={`nav-tab-modern ${activeTab === 'qr' ? 'active' : ''}`}
+              onClick={() => setActiveTab('qr')}
+            >
+              <div className="d-flex align-items-center gap-2">
+                <span className="fs-5">📱</span>
+                <span>QR Code</span>
+              </div>
+            </button>
           </div>
         </div>
 
@@ -395,13 +356,11 @@ export default function VendorDashboard() {
 
         {/* Cashier Tab */}
         {activeTab === 'cashier' && (
-          <div className="mb-4">
-            <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
-              <div className="card-body p-4">
-                <div className="text-center mb-3">
-                  <h4 className="fw-bold text-dark mb-2">💳 Cashier Orders</h4>
-                  <p className="text-muted mb-0">Create orders for customers paying at the counter</p>
-                </div>
+          <div className="fade-in-modern ipad-full-height">
+            <div className="card-modern mb-6">
+              <div className="card-modern-header text-center">
+                <h2 className="heading-3-modern mb-2">💳 Cashier Orders</h2>
+                <p className="text-muted-modern mb-0">Create orders for customers paying at the counter</p>
               </div>
             </div>
             <CashierOrder 

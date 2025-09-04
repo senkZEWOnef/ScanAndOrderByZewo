@@ -272,81 +272,90 @@ export default function CashierOrder({ user, onOrderCreated }) {
   };
 
   return (
-    <div className="row">
+    <div className="ipad-grid">
       {/* Left Panel - Menu Items */}
-      <div className="col-lg-7">
-        <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
-          <div className="card-body p-4">
-            <h5 className="fw-bold text-dark mb-4">🛒 Select Menu Items</h5>
+      <div className="flex-grow-1">
+        <div className="card-modern mb-4">
+          <div className="card-modern-header">
+            <h3 className="heading-3-modern mb-0">🛒 Select Menu Items</h3>
+          </div>
+          <div className="card-modern-body">
             
             {/* Search and Filter */}
-            <div className="row mb-4">
-              <div className="col-md-8">
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  placeholder="🔍 Search menu items..."
-                  style={{ borderRadius: '12px' }}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="col-md-4">
-                <select
-                  className="form-select form-select-lg"
-                  style={{ borderRadius: '12px' }}
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  <option value="all">All Categories</option>
-                  <option value="mains">🍔 Mains</option>
-                  <option value="appetizers">🥗 Appetizers</option>
-                  <option value="sides">🍟 Sides</option>
-                  <option value="drinks">🥤 Drinks</option>
-                  <option value="desserts">🍰 Desserts</option>
-                  <option value="other">🍽️ Other</option>
-                </select>
+            <div className="form-modern mb-6">
+              <div className="grid-modern grid-cols-2-modern gap-4">
+                <div className="form-group-modern">
+                  <input
+                    type="text"
+                    className="form-input-modern"
+                    placeholder="🔍 Search menu items..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="form-group-modern">
+                  <select
+                    className="form-input-modern"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                  >
+                    <option value="all">All Categories</option>
+                    <option value="mains">🍔 Mains</option>
+                    <option value="appetizers">🥗 Appetizers</option>
+                    <option value="sides">🍟 Sides</option>
+                    <option value="drinks">🥤 Drinks</option>
+                    <option value="desserts">🍰 Desserts</option>
+                    <option value="other">🍽️ Other</option>
+                  </select>
+                </div>
               </div>
             </div>
 
             {/* Menu Items Grid */}
-            <div className="row g-3" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+            <div className="ipad-card-grid ipad-scroll">
               {filteredMenuItems().map((item) => (
-                <div key={item.id} className="col-lg-6 col-md-6">
-                  <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '12px' }}>
-                    <div className="card-body p-3">
+                <div key={item.id}>
+                  <div className="card-modern hover-lift-modern h-100">
+                    <div className="p-4">
                       <div className="d-flex align-items-start gap-3">
                         {item.image_url ? (
                           <img
                             src={item.image_url}
                             alt={item.name}
-                            className="rounded-3"
                             style={{
-                              width: "60px",
-                              height: "60px",
+                              width: "64px",
+                              height: "64px",
                               objectFit: "cover",
+                              borderRadius: 'var(--radius-lg)',
                               flexShrink: 0
                             }}
                           />
                         ) : (
                           <div
-                            className="bg-light rounded-3 d-flex align-items-center justify-content-center"
-                            style={{ width: "60px", height: "60px", flexShrink: 0 }}
+                            style={{ 
+                              width: "64px", 
+                              height: "64px", 
+                              backgroundColor: 'var(--color-gray-100)',
+                              borderRadius: 'var(--radius-lg)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
                           >
-                            <span className="text-muted fs-5">🍽️</span>
+                            <span style={{ fontSize: '1.5rem' }}>🍽️</span>
                           </div>
                         )}
-                        <div className="flex-grow-1 min-w-0">
-                          <h6 className="fw-bold mb-1">{item.name}</h6>
-                          <p className="text-muted small mb-2 lh-sm">{item.description}</p>
+                        <div className="flex-grow-1">
+                          <h4 className="fw-semibold mb-1" style={{ color: 'var(--color-gray-800)' }}>{item.name}</h4>
+                          <p className="text-muted-modern text-small-modern mb-3">{item.description}</p>
                           <div className="d-flex justify-content-between align-items-center">
-                            <span className="fs-6 fw-bold text-success">${item.price.toFixed(2)}</span>
+                            <span className="fw-bold" style={{ color: 'var(--color-success)', fontSize: 'var(--text-lg)' }}>${item.price.toFixed(2)}</span>
                             <button
-                              className="btn btn-primary btn-sm"
+                              className="btn-modern btn-primary-modern clickable-modern"
                               onClick={() => addToCart(item)}
-                              style={{ borderRadius: '8px' }}
                             >
-                              + Add
+                              Add
                             </button>
                           </div>
                         </div>
@@ -358,8 +367,9 @@ export default function CashierOrder({ user, onOrderCreated }) {
             </div>
 
             {filteredMenuItems().length === 0 && (
-              <div className="text-center py-4">
-                <p className="text-muted">No menu items found</p>
+              <div className="text-center py-8">
+                <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>🍽️</div>
+                <p className="text-muted-modern">No menu items found</p>
               </div>
             )}
           </div>
@@ -367,25 +377,25 @@ export default function CashierOrder({ user, onOrderCreated }) {
       </div>
 
       {/* Right Panel - Cart and Customer Info */}
-      <div className="col-lg-5">
+      <div style={{ width: '400px', flexShrink: 0 }}>
         {/* Cash Drawer Status */}
         {drawerSettings.autoOpen && (
-          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
-            <div className="card-body p-3">
-              <div className="d-flex align-items-center">
-                <span className={`fs-4 me-2 ${drawerStatus.isConnected ? 'text-success' : 'text-muted'}`}>
+          <div className="card-modern mb-4">
+            <div className="p-3">
+              <div className="d-flex align-items-center gap-3">
+                <span style={{ fontSize: '1.5rem' }}>
                   {drawerStatus.isConnected ? '💰' : '🔌'}
                 </span>
                 <div className="flex-grow-1">
-                  <div className="fw-semibold">
+                  <div className="fw-semibold" style={{ color: 'var(--color-gray-800)' }}>
                     Cash Drawer: {drawerStatus.isConnected ? 'Connected' : 'Not Connected'}
                   </div>
-                  <small className="text-muted">
+                  <div className="text-muted-modern text-small-modern">
                     {drawerStatus.isConnected 
                       ? 'Will open automatically when order is completed'
                       : 'Connect in Hardware settings to enable auto-open'
                     }
-                  </small>
+                  </div>
                 </div>
               </div>
             </div>
@@ -393,139 +403,142 @@ export default function CashierOrder({ user, onOrderCreated }) {
         )}
 
         {/* Customer Information */}
-        <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
-          <div className="card-body p-4">
-            <h5 className="fw-bold text-dark mb-4">👤 Customer Information</h5>
-            
-            <div className="mb-3">
-              <label className="form-label fw-semibold">Phone Number *</label>
-              <input
-                type="tel"
-                className="form-control form-control-lg"
-                placeholder="(555) 123-4567"
-                style={{ borderRadius: '12px' }}
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                required
-              />
-            </div>
+        <div className="card-modern mb-4">
+          <div className="card-modern-header">
+            <h3 className="heading-3-modern mb-0">👤 Customer Information</h3>
+          </div>
+          <div className="card-modern-body">
+            <div className="form-modern">
+              <div className="form-group-modern">
+                <label className="form-label-modern">Phone Number *</label>
+                <input
+                  type="tel"
+                  className="form-input-modern"
+                  placeholder="(555) 123-4567"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="mb-3">
-              <label className="form-label fw-semibold">Customer Name (Optional)</label>
-              <input
-                type="text"
-                className="form-control form-control-lg"
-                placeholder="John Doe"
-                style={{ borderRadius: '12px' }}
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-              />
-            </div>
+              <div className="form-group-modern">
+                <label className="form-label-modern">Customer Name (Optional)</label>
+                <input
+                  type="text"
+                  className="form-input-modern"
+                  placeholder="John Doe"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+              </div>
 
-            <div className="mb-3">
-              <label className="form-label fw-semibold">Special Instructions</label>
-              <textarea
-                className="form-control"
-                rows="3"
-                style={{ borderRadius: '12px' }}
-                placeholder="Any special requests or notes..."
-                value={specialInstructions}
-                onChange={(e) => setSpecialInstructions(e.target.value)}
-              />
+              <div className="form-group-modern">
+                <label className="form-label-modern">Special Instructions</label>
+                <textarea
+                  className="form-input-modern"
+                  rows="3"
+                  placeholder="Any special requests or notes..."
+                  value={specialInstructions}
+                  onChange={(e) => setSpecialInstructions(e.target.value)}
+                  style={{ resize: 'vertical', minHeight: '80px' }}
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Cart Summary */}
-        <div className="card border-0 shadow-sm" style={{ borderRadius: '16px' }}>
-          <div className="card-body p-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h5 className="fw-bold text-dark mb-0">🛒 Order Summary</h5>
+        <div className="card-modern">
+          <div className="card-modern-header">
+            <div className="d-flex justify-content-between align-items-center">
+              <h3 className="heading-3-modern mb-0">🛒 Order Summary</h3>
               {cart.length > 0 && (
                 <button
-                  className="btn btn-outline-danger btn-sm"
+                  className="btn-modern btn-secondary-modern text-small-modern"
                   onClick={clearCart}
-                  style={{ borderRadius: '8px' }}
                 >
                   Clear All
                 </button>
               )}
             </div>
+          </div>
+          <div className="card-modern-body">
 
             {cart.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-muted">Cart is empty</p>
-                <small className="text-muted">Add items from the menu</small>
+              <div className="text-center py-8">
+                <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>🛒</div>
+                <p className="text-muted-modern">Cart is empty</p>
+                <p className="text-muted-modern text-small-modern">Add items from the menu</p>
               </div>
             ) : (
               <>
                 {/* Cart Items */}
-                <div className="mb-4" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                <div className="ipad-scroll mb-6">
                   {cart.map((item) => (
-                    <div key={item.id} className="d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                    <div key={item.id} className="d-flex justify-content-between align-items-center mb-4 p-4" style={{ backgroundColor: 'var(--color-gray-50)', borderRadius: 'var(--radius-lg)' }}>
                       <div className="flex-grow-1">
-                        <h6 className="mb-1 fw-semibold">{item.name}</h6>
-                        <small className="text-muted">${item.price.toFixed(2)} each</small>
+                        <h4 className="fw-semibold mb-1" style={{ color: 'var(--color-gray-800)' }}>{item.name}</h4>
+                        <div className="text-muted-modern text-small-modern">${item.price.toFixed(2)} each</div>
                       </div>
-                      <div className="d-flex align-items-center gap-2">
+                      <div className="d-flex align-items-center gap-3">
                         <button
-                          className="btn btn-outline-secondary btn-sm"
+                          className="btn-modern btn-secondary-modern clickable-modern"
                           onClick={() => removeFromCart(item.id)}
-                          style={{ borderRadius: '8px', width: '30px', height: '30px' }}
+                          style={{ minWidth: '40px', height: '40px', padding: '0' }}
                         >
-                          -
+                          −
                         </button>
-                        <span className="fw-bold px-2">{item.quantity}</span>
+                        <span className="fw-bold" style={{ minWidth: '24px', textAlign: 'center', color: 'var(--color-gray-800)' }}>{item.quantity}</span>
                         <button
-                          className="btn btn-outline-primary btn-sm"
+                          className="btn-modern btn-primary-modern clickable-modern"
                           onClick={() => addToCart(item)}
-                          style={{ borderRadius: '8px', width: '30px', height: '30px' }}
+                          style={{ minWidth: '40px', height: '40px', padding: '0' }}
                         >
                           +
                         </button>
                       </div>
-                      <div className="text-end ms-3">
-                        <strong>${(item.price * item.quantity).toFixed(2)}</strong>
+                      <div className="text-end ms-4" style={{ minWidth: '80px' }}>
+                        <div className="fw-bold" style={{ color: 'var(--color-gray-800)', fontSize: 'var(--text-lg)' }}>${(item.price * item.quantity).toFixed(2)}</div>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 {/* Order Total */}
-                <div className="border-top pt-3 mb-4">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span>Items ({getCartItemCount()}):</span>
-                    <span>${getCartTotal().toFixed(2)}</span>
+                <div style={{ borderTop: '1px solid var(--color-gray-200)', paddingTop: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <span style={{ color: 'var(--color-gray-600)' }}>Items ({getCartItemCount()}):</span>
+                    <span style={{ color: 'var(--color-gray-800)' }}>${getCartTotal().toFixed(2)}</span>
                   </div>
                   <div className="d-flex justify-content-between align-items-center">
-                    <strong className="fs-5">Total:</strong>
-                    <strong className="fs-4 text-success">${getCartTotal().toFixed(2)}</strong>
+                    <span className="fw-bold" style={{ fontSize: 'var(--text-lg)', color: 'var(--color-gray-800)' }}>Total:</span>
+                    <span className="fw-bold" style={{ fontSize: 'var(--text-2xl)', color: 'var(--color-success)' }}>${getCartTotal().toFixed(2)}</span>
                   </div>
                 </div>
 
                 {/* Create Order Button */}
                 <button
-                  className="btn btn-success btn-lg w-100 fw-bold"
-                  style={{ borderRadius: '12px' }}
+                  className="btn-modern btn-success-modern btn-lg-modern w-100 fw-bold"
                   onClick={handleCreateOrder}
                   disabled={loading || !customerPhone.trim()}
+                  style={{ padding: 'var(--space-4) var(--space-6)' }}
                 >
                   {loading ? (
                     <>
-                      <span className="spinner-border spinner-border-sm me-2" />
+                      <span className="loading-spinner-modern me-2" />
                       Creating Order...
                     </>
                   ) : (
                     <>
-                      💳 Create Cash Order - ${getCartTotal().toFixed(2)}
+                      💳 Create Cash Order • ${getCartTotal().toFixed(2)}
                     </>
                   )}
                 </button>
 
-                <div className="text-center mt-2">
-                  <small className="text-muted">
+                <div className="text-center mt-3">
+                  <div className="text-muted-modern text-small-modern">
                     💡 Cash payment collected at counter
-                  </small>
+                  </div>
                 </div>
               </>
             )}
