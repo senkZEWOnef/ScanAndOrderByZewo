@@ -35,7 +35,7 @@ export default function OrderManagement({ user }) {
         .from("orders")
         .select(`
           *,
-          customers (phone),
+          customers (phone, name),
           order_items (
             *,
             menu_items (name, price)
@@ -243,6 +243,9 @@ export default function OrderManagement({ user }) {
                         <span className={`badge bg-${getStatusColor(order.status)} ms-2`}>
                           {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                         </span>
+                        <span className={`badge ms-1 ${order.order_type === 'cashier' ? 'bg-info' : 'bg-secondary'}`}>
+                          {order.order_type === 'cashier' ? '💳 Cashier' : '📱 QR Code'}
+                        </span>
                       </h6>
                       <small className="text-muted">
                         {formatTime(order.created_at)}
@@ -250,7 +253,10 @@ export default function OrderManagement({ user }) {
                     </div>
                     
                     <p className="mb-2">
-                      <strong>Customer:</strong> {order.customers?.phone || 'Unknown'}
+                      <strong>Customer:</strong> {order.customers?.name || order.customers?.phone || 'Unknown'}
+                      {order.customers?.name && order.customers?.phone && (
+                        <small className="text-muted"> ({order.customers.phone})</small>
+                      )}
                       <br />
                       <strong>Total:</strong> ${order.total_amount?.toFixed(2)}
                       <br />
@@ -258,6 +264,9 @@ export default function OrderManagement({ user }) {
                       <span className={`ms-1 ${order.payment_status === 'paid' ? 'text-success' : 'text-warning'}`}>
                         {order.payment_status === 'paid' ? '✓ Paid' : '⏳ Pending'}
                       </span>
+                      {order.order_type === 'cashier' && order.payment_status === 'paid' && (
+                        <small className="text-muted"> (Cash)</small>
+                      )}
                     </p>
 
                     {order.special_instructions && (

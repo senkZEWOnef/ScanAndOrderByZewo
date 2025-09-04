@@ -4,6 +4,8 @@ import OrderManagement from "../components/OrderManagement";
 import AnalyticsDashboard from "../components/AnalyticsDashboard";
 import BusinessCustomization from "../components/BusinessCustomization";
 import FoodLibraryModal from "../components/FoodLibraryModal";
+import CashierOrder from "../components/CashierOrder";
+import CashDrawerSettings from "../components/CashDrawerSettings";
 import { massiveFoodLibrary, cuisineTemplates } from "../data/massiveFoodLibrary";
 
 export default function VendorDashboard() {
@@ -15,18 +17,38 @@ export default function VendorDashboard() {
     name: "",
     description: "",
     price: "",
+    category: "",
   });
   const [editingItemId, setEditingItemId] = useState(null);
   const [editedItem, setEditedItem] = useState({
     name: "",
     description: "",
     price: "",
+    category: "",
   });
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showFoodLibrary, setShowFoodLibrary] = useState(false);
   const [selectedCuisine, setSelectedCuisine] = useState('');
   const [isPopulating, setIsPopulating] = useState(false);
+
+  // Predefined categories for menu items
+  const menuCategories = [
+    { value: '', label: 'Select Category (Optional)' },
+    { value: 'appetizer', label: '🥗 Appetizers & Starters' },
+    { value: 'main', label: '🍔 Main Dishes' },
+    { value: 'side', label: '🍟 Sides & Extras' },
+    { value: 'drink', label: '🥤 Beverages & Drinks' },
+    { value: 'dessert', label: '🍰 Desserts & Sweets' },
+    { value: 'combo', label: '🍽️ Combo Meals' },
+    { value: 'special', label: '⭐ Chef Specials' },
+    { value: 'other', label: '🍽️ Other' }
+  ];
+
+  const getCategoryDisplayName = (categoryValue) => {
+    const category = menuCategories.find(cat => cat.value === categoryValue);
+    return category ? category.label : categoryValue;
+  };
 
   useEffect(() => {
     const getUser = async () => {
@@ -106,13 +128,14 @@ export default function VendorDashboard() {
         description: newItem.description,
         price: parseFloat(newItem.price),
         image_url: imageUrl,
+        category: newItem.category || null,
       },
     ]);
 
     if (error) {
       alert("Error creating item: " + error.message);
     } else {
-      setNewItem({ name: "", description: "", price: "" });
+      setNewItem({ name: "", description: "", price: "", category: "" });
       setImageFile(null);
       fetchMenuItems();
     }
@@ -131,6 +154,7 @@ export default function VendorDashboard() {
       name: item.name,
       description: item.description,
       price: item.price,
+      category: item.category || '',
     });
   };
 
@@ -145,6 +169,7 @@ export default function VendorDashboard() {
         name: editedItem.name,
         description: editedItem.description,
         price: parseFloat(editedItem.price),
+        category: editedItem.category || null,
       })
       .eq("id", id);
 
@@ -182,6 +207,7 @@ export default function VendorDashboard() {
           description: item.description,
           price: item.price,
           image_url: item.image_url,
+          category: item.category || null,
         }]);
       }
       
@@ -203,6 +229,7 @@ export default function VendorDashboard() {
         description: item.description,
         price: item.price,
         image_url: item.image_url,
+        category: item.category || null,
       }]);
       
       alert(`✅ Added "${item.name}" to your menu!`);
@@ -283,6 +310,19 @@ export default function VendorDashboard() {
                     </div>
                   </button>
                   <button 
+                    className={`nav-link border-0 py-3 ${activeTab === 'cashier' ? 'active' : ''}`}
+                    style={{ 
+                      background: activeTab === 'cashier' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
+                      color: activeTab === 'cashier' ? 'white' : '#6c757d'
+                    }}
+                    onClick={() => setActiveTab('cashier')}
+                  >
+                    <div className="d-flex flex-column align-items-center">
+                      <span className="fs-4 mb-1">💳</span>
+                      <span className="fw-semibold small">Cashier</span>
+                    </div>
+                  </button>
+                  <button 
                     className={`nav-link border-0 py-3 ${activeTab === 'menu' ? 'active' : ''}`}
                     style={{ 
                       background: activeTab === 'menu' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
@@ -306,6 +346,19 @@ export default function VendorDashboard() {
                     <div className="d-flex flex-column align-items-center">
                       <span className="fs-4 mb-1">🎨</span>
                       <span className="fw-semibold small">Customize</span>
+                    </div>
+                  </button>
+                  <button 
+                    className={`nav-link border-0 py-3 ${activeTab === 'hardware' ? 'active' : ''}`}
+                    style={{ 
+                      background: activeTab === 'hardware' ? 'linear-gradient(45deg, #667eea, #764ba2)' : 'transparent',
+                      color: activeTab === 'hardware' ? 'white' : '#6c757d'
+                    }}
+                    onClick={() => setActiveTab('hardware')}
+                  >
+                    <div className="d-flex flex-column align-items-center">
+                      <span className="fs-4 mb-1">💰</span>
+                      <span className="fw-semibold small">Hardware</span>
                     </div>
                   </button>
                   <button 
@@ -340,6 +393,27 @@ export default function VendorDashboard() {
           <OrderManagement user={user} />
         )}
 
+        {/* Cashier Tab */}
+        {activeTab === 'cashier' && (
+          <div className="mb-4">
+            <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
+              <div className="card-body p-4">
+                <div className="text-center mb-3">
+                  <h4 className="fw-bold text-dark mb-2">💳 Cashier Orders</h4>
+                  <p className="text-muted mb-0">Create orders for customers paying at the counter</p>
+                </div>
+              </div>
+            </div>
+            <CashierOrder 
+              user={user}
+              onOrderCreated={() => {
+                // Optionally switch to orders tab after creating order
+                // setActiveTab('orders');
+              }}
+            />
+          </div>
+        )}
+
         {/* Customize Tab */}
         {activeTab === 'customize' && (
           <BusinessCustomization 
@@ -347,6 +421,11 @@ export default function VendorDashboard() {
             vendorProfile={vendorProfile}
             onProfileUpdate={setVendorProfile}
           />
+        )}
+
+        {/* Hardware Tab */}
+        {activeTab === 'hardware' && (
+          <CashDrawerSettings />
         )}
 
         {/* Menu Tab */}
@@ -468,6 +547,22 @@ export default function VendorDashboard() {
                           required
                         />
                       </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-semibold">Category</label>
+                        <select
+                          name="category"
+                          className="form-select form-select-lg"
+                          style={{ borderRadius: '12px' }}
+                          value={newItem.category}
+                          onChange={handleInputChange}
+                        >
+                          {menuCategories.map(category => (
+                            <option key={category.value} value={category.value}>
+                              {category.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                       <div className="col-12">
                         <label className="form-label fw-semibold">Description</label>
                         <textarea
@@ -554,12 +649,25 @@ export default function VendorDashboard() {
                                     type="number"
                                     step="0.01"
                                     name="price"
-                                    className="form-control"
+                                    className="form-control mb-2"
                                     style={{ borderRadius: '8px' }}
                                     value={editedItem.price}
                                     onChange={handleEditChange}
                                     placeholder="Price"
                                   />
+                                  <select
+                                    name="category"
+                                    className="form-select"
+                                    style={{ borderRadius: '8px' }}
+                                    value={editedItem.category}
+                                    onChange={handleEditChange}
+                                  >
+                                    {menuCategories.map(category => (
+                                      <option key={category.value} value={category.value}>
+                                        {category.label}
+                                      </option>
+                                    ))}
+                                  </select>
                                 </div>
                                 <div className="d-flex gap-2">
                                   <button

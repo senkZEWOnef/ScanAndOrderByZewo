@@ -118,15 +118,15 @@ export default function CustomerMenu() {
     
     menuItems.forEach(item => {
       const category = item.category?.toLowerCase() || 'other';
-      if (category.includes('appetizer') || category.includes('starter')) {
+      if (category === 'appetizer' || category.includes('appetizer') || category.includes('starter')) {
         categories.appetizers.push(item);
-      } else if (category.includes('drink') || category.includes('beverage')) {
+      } else if (category === 'drink' || category.includes('drink') || category.includes('beverage')) {
         categories.drinks.push(item);
-      } else if (category.includes('dessert') || category.includes('sweet')) {
+      } else if (category === 'dessert' || category.includes('dessert') || category.includes('sweet')) {
         categories.desserts.push(item);
-      } else if (category.includes('side')) {
+      } else if (category === 'side' || category.includes('side')) {
         categories.sides.push(item);
-      } else if (category.includes('main') || category.includes('entree') || category.includes('burger') || category.includes('pizza') || category.includes('taco')) {
+      } else if (category === 'main' || category.includes('main') || category.includes('entree') || category.includes('burger') || category.includes('pizza') || category.includes('taco')) {
         categories.mains.push(item);
       } else {
         categories.other.push(item);

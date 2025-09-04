@@ -1,3 +1,4 @@
+
 {
   "name": "frontend",
   "private": true,
@@ -10,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^7.9.0",
     "@supabase/supabase-js": "^2.50.4",
     "bootstrap": "^5.3.7",
     "react": "^19.1.0",

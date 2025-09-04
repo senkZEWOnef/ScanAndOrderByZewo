@@ -37,3 +37,12 @@ ALTER TABLE business_food_library ENABLE ROW LEVEL SECURITY;
 -- Policies for business_food_library
 CREATE POLICY "Vendors can manage their food library" ON business_food_library 
 FOR ALL USING (auth.uid() = vendor_id);
+
+-- Add order_type field to orders table to distinguish between QR and cashier orders
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_type VARCHAR DEFAULT 'qr_code';
+
+-- Add name field to customers table (optional)
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS name VARCHAR;
+
+-- Add category field to menu_items table to enable menu categorization
+ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS category VARCHAR;
