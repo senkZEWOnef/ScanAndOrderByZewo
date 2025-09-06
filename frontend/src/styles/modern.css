@@ -7,6 +7,9 @@
   --color-primary-light: #e6f2ff;
   
   /* Neutral Colors - Clean & Professional */
+  --color-background: #fafbfc;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f8fafc;
   --color-gray-50: #f8fafc;
   --color-gray-100: #f1f5f9;
   --color-gray-200: #e2e8f0;
@@ -90,6 +93,8 @@ body {
   font-family: var(--font-family-base);
   font-size: var(--text-base);
   line-height: 1.5;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
   color: var(--color-gray-800);
   background-color: var(--color-gray-50);
   -webkit-font-smoothing: antialiased;
@@ -162,16 +167,18 @@ body {
 
 /* Professional Card Styles */
 .card-modern {
-  background: white;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
   border-radius: var(--radius-xl);
-  border: 1px solid var(--color-gray-200);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   transition: all var(--transition-normal);
 }
 
 .card-modern:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-gray-300);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .card-modern-header {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { useNavigate } from "react-router-dom";
 import OrderManagement from "../components/OrderManagement";
 import AnalyticsDashboard from "../components/AnalyticsDashboard";
 import BusinessCustomization from "../components/BusinessCustomization";
@@ -9,6 +10,7 @@ import CashDrawerSettings from "../components/CashDrawerSettings";
 import { massiveFoodLibrary, cuisineTemplates } from "../data/massiveFoodLibrary";
 
 export default function VendorDashboard() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [vendorProfile, setVendorProfile] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
@@ -27,6 +29,7 @@ export default function VendorDashboard() {
     category: "",
   });
   const [loading, setLoading] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showFoodLibrary, setShowFoodLibrary] = useState(false);
   const [selectedCuisine, setSelectedCuisine] = useState('');
@@ -52,11 +55,34 @@ export default function VendorDashboard() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (data.user) {
+          setUser(data.user);
+        } else {
+          navigate('/vendor-login');
+          return;
+        }
+      } catch (error) {
+        console.error('Auth error:', error);
+        navigate('/vendor-login');
+      } finally {
+        setAuthLoading(false);
+      }
     };
     getUser();
-  }, []);
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate('/vendor-login');
+      } else if (session?.user) {
+        setUser(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   useEffect(() => {
     if (user) {
@@ -239,6 +265,21 @@ export default function VendorDashboard() {
     }
   };
 
+  // Show loading screen while checking authentication
+  if (authLoading || !user) {
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center" 
+           style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <h4 className="text-muted">Loading Dashboard...</h4>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-vh-100" style={{ backgroundColor: 'var(--color-gray-50)' }}>
       {/* Professional Header */}
@@ -265,7 +306,10 @@ export default function VendorDashboard() {
           </div>
           <button 
             className="btn-modern btn-secondary-modern"
-            onClick={() => supabase.auth.signOut()}
+            onClick={async () => {
+              await supabase.auth.signOut();
+              navigate('/vendor-login');
+            }}
           >
             Sign Out
           </button>

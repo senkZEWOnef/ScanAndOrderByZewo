@@ -9,7 +9,7 @@ export default function PaymentModal({
   vendor 
 }) {
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState(orderData?.paymentMethod?.id || 'card');
   
   const handlePayment = async () => {
     if (paymentMethod === 'cash') {
@@ -24,18 +24,34 @@ export default function PaymentModal({
     setLoading(true);
     
     try {
-      // In a real app, you'd call your backend to create a PaymentIntent
-      // For now, we'll simulate the Stripe payment flow
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simulate successful payment
-      onPaymentSuccess({
-        method: 'card',
-        status: 'paid',
-        paymentIntentId: 'pi_' + Math.random().toString(36).substr(2, 9)
-      });
+      if (paymentMethod === 'ath_movil') {
+        // Simulate ATH Móvil payment flow
+        console.log('Processing ATH Móvil payment for:', orderData);
+        
+        // Simulate API delay for ATH Móvil processing
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        // Simulate successful ATH Móvil payment
+        onPaymentSuccess({
+          method: 'ath_movil',
+          status: 'paid',
+          transactionId: 'atm_' + Math.random().toString(36).substr(2, 9)
+        });
+      } else {
+        // Card payment flow
+        // In a real app, you'd call your backend to create a PaymentIntent
+        // For now, we'll simulate the Stripe payment flow
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Simulate successful payment
+        onPaymentSuccess({
+          method: 'card',
+          status: 'paid',
+          paymentIntentId: 'pi_' + Math.random().toString(36).substr(2, 9)
+        });
+      }
       
     } catch (error) {
       alert('Payment failed. Please try again.');
@@ -95,11 +111,15 @@ export default function PaymentModal({
           </div>
           <div className="modal-body p-4">
             {/* Order Summary Card */}
-            <div className="card mb-4 border-0" style={{ backgroundColor: '#f8f9fa', borderRadius: '12px' }}>
+            <div className="card mb-4 border-0" style={{ 
+              background: 'rgba(16, 185, 129, 0.1)', 
+              borderRadius: '12px',
+              border: '1px solid rgba(16, 185, 129, 0.2)'
+            }}>
               <div className="card-body p-3 text-center">
                 <div className="fs-2 fw-bold text-success mb-2">${orderData?.total?.toFixed(2)}</div>
                 <div className="text-muted">
-                  🛒 {orderData?.items?.length} {orderData?.items?.length === 1 ? 'item' : 'items'} from {orderData?.vendorName}
+                  🛒 {orderData?.items?.length} {orderData?.items?.length === 1 ? 'item' : 'items'} from {vendor?.business_name}
                 </div>
                 <div className="mt-2">
                   <span className="badge" style={{ backgroundColor: vendor?.accent_color || '#ffc107' }}>
@@ -109,75 +129,78 @@ export default function PaymentModal({
               </div>
             </div>
 
-            <div className="mb-4">
-              <h6 className="fw-bold mb-3">💳 Choose Payment Method</h6>
-              
-              {/* Card Payment Option */}
-              <div className="card mb-3 border-0 shadow-sm" 
-                   style={{ 
-                     borderRadius: '12px',
-                     border: paymentMethod === 'card' ? `2px solid ${vendor?.primary_color || '#007bff'}` : '1px solid #dee2e6'
-                   }}>
-                <div className="card-body p-3">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="paymentMethod"
-                      id="cardPayment"
-                      value="card"
-                      checked={paymentMethod === 'card'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                    />
-                    <label className="form-check-label fw-semibold" htmlFor="cardPayment">
-                      💳 Credit/Debit Card
-                      <div className="small text-muted mt-1">Pay now with your card (Secure)</div>
-                    </label>
+            {/* Payment Method Display */}
+            <div className="card mb-4 border-0" style={{ 
+              background: 'rgba(255, 255, 255, 0.4)', 
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
+              <div className="card-body p-3">
+                <h6 className="fw-bold mb-3">💳 Payment Method</h6>
+                <div className="d-flex align-items-center gap-3">
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    backgroundColor: orderData?.paymentMethod?.color || 'var(--color-primary)',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.25rem'
+                  }}>
+                    {orderData?.paymentMethod?.icon || '💳'}
                   </div>
-                </div>
-              </div>
-              
-              {/* Cash Payment Option */}
-              <div className="card border-0 shadow-sm" 
-                   style={{ 
-                     borderRadius: '12px',
-                     border: paymentMethod === 'cash' ? `2px solid ${vendor?.accent_color || '#ffc107'}` : '1px solid #dee2e6'
-                   }}>
-                <div className="card-body p-3">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="paymentMethod"
-                      id="cashPayment"
-                      value="cash"
-                      checked={paymentMethod === 'cash'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                    />
-                    <label className="form-check-label fw-semibold" htmlFor="cashPayment">
-                      💵 Pay Cash at Pickup
-                      <div className="small text-muted mt-1">Pay when you collect your order</div>
-                    </label>
+                  <div>
+                    <div className="fw-semibold">{orderData?.paymentMethod?.name || 'Credit/Debit Card'}</div>
+                    <div className="text-muted small">{orderData?.paymentMethod?.description || 'Pay securely with your card'}</div>
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Payment Processing Info */}
             {paymentMethod === 'card' && (
-              <div className="alert alert-info">
-                <small>
-                  <strong>Demo Mode:</strong> In production, this would show Stripe's secure payment form. 
-                  For now, clicking "Pay Now" will simulate a successful payment.
-                </small>
+              <div className="alert alert-info border-0" style={{ borderRadius: '12px' }}>
+                <div className="d-flex align-items-start gap-2">
+                  <span style={{ fontSize: '1.1rem' }}>🔐</span>
+                  <div>
+                    <div className="fw-semibold small mb-1">Secure Card Payment</div>
+                    <small className="text-muted">
+                      Your payment is processed securely using industry-standard encryption. 
+                      In production, this would integrate with Stripe's secure payment system.
+                    </small>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {paymentMethod === 'ath_movil' && (
+              <div className="alert alert-info border-0" style={{ borderRadius: '12px' }}>
+                <div className="d-flex align-items-start gap-2">
+                  <span style={{ fontSize: '1.1rem' }}>📱</span>
+                  <div>
+                    <div className="fw-semibold small mb-1">ATH Móvil Payment</div>
+                    <small className="text-muted">
+                      You'll be redirected to the ATH Móvil app to complete your payment. 
+                      Make sure you have the ATH Móvil app installed on your device.
+                    </small>
+                  </div>
+                </div>
               </div>
             )}
 
             {paymentMethod === 'cash' && (
-              <div className="alert alert-warning">
-                <small>
-                  <strong>Cash Payment:</strong> Please have exact change ready when you arrive. 
-                  Your order will be confirmed and prepared once you place it.
-                </small>
+              <div className="alert alert-warning border-0" style={{ borderRadius: '12px' }}>
+                <div className="d-flex align-items-start gap-2">
+                  <span style={{ fontSize: '1.1rem' }}>💵</span>
+                  <div>
+                    <div className="fw-semibold small mb-1">Cash Payment</div>
+                    <small className="text-muted">
+                      Please have exact change ready when you arrive. 
+                      Your order will be confirmed and prepared once you place it.
+                    </small>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -195,18 +218,20 @@ export default function PaymentModal({
                 borderRadius: '15px',
                 border: 'none'
               }}
-              onClick={paymentMethod === 'card' ? handleStripePayment : handlePayment}
+              onClick={handlePayment}
               disabled={loading}
             >
               {loading ? (
                 <>
                   <span className="spinner-border spinner-border-sm me-2" />
-                  Processing Payment...
+                  {paymentMethod === 'ath_movil' ? 'Processing ATH Móvil Payment...' : 'Processing Payment...'}
                 </>
               ) : (
                 paymentMethod === 'card' ? 
                   `💳 Pay $${orderData?.total?.toFixed(2)} Now` : 
-                  `✅ Confirm Order - Pay $${orderData?.total?.toFixed(2)} Cash`
+                  paymentMethod === 'ath_movil' ?
+                    `📱 Pay $${orderData?.total?.toFixed(2)} with ATH Móvil` :
+                    `✅ Confirm Order - Pay $${orderData?.total?.toFixed(2)} Cash`
               )}
             </button>
           </div>

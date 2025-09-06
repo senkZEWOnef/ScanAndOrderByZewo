@@ -46,3 +46,12 @@ ALTER TABLE customers ADD COLUMN IF NOT EXISTS name VARCHAR;
 
 -- Add category field to menu_items table to enable menu categorization
 ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS category VARCHAR;
+
+-- Add payment method and enhanced payment status tracking
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method VARCHAR DEFAULT 'card';
+
+-- Update payment_status to support new statuses
+-- 'pending' - card/ATH payment not completed
+-- 'pending_cash' - customer chose cash, waiting to pay at counter  
+-- 'paid' - payment completed (card/ATH/cash)
+-- 'failed' - payment failed or cancelled

@@ -84,6 +84,7 @@ export default function OrderManagement({ user }) {
   const getStatusColor = (status) => {
     const colors = {
       'pending': 'warning',
+      'pending_payment': 'warning',
       'confirmed': 'info', 
       'preparing': 'primary',
       'ready': 'success',
@@ -96,7 +97,27 @@ export default function OrderManagement({ user }) {
   const getStatusActions = (order) => {
     const actions = [];
     
-    if (order.status === 'pending') {
+    if (order.status === 'pending_payment') {
+      // Cash payment pending - customer needs to pay at counter
+      actions.push(
+        <button 
+          key="collect_payment" 
+          className="btn btn-sm btn-warning me-1"
+          onClick={() => handleCashPayment(order.id)}
+        >
+          💵 Collect Cash Payment
+        </button>
+      );
+      actions.push(
+        <button 
+          key="cancel" 
+          className="btn btn-sm btn-danger"
+          onClick={() => updateOrderStatus(order.id, 'cancelled')}
+        >
+          Cancel Order
+        </button>
+      );
+    } else if (order.status === 'pending') {
       actions.push(
         <button 
           key="confirm" 
@@ -150,10 +171,31 @@ export default function OrderManagement({ user }) {
     return actions;
   };
 
+  const handleCashPayment = async (orderId) => {
+    try {
+      const { error } = await supabase
+        .from("orders")
+        .update({ 
+          payment_status: 'paid',
+          status: 'pending' // Move to regular pending status after payment
+        })
+        .eq("id", orderId);
+
+      if (error) {
+        alert("Error processing cash payment");
+      } else {
+        fetchOrders(); // Refresh orders
+        alert("💵 Cash payment collected! Order is now in regular queue.");
+      }
+    } catch (error) {
+      console.error("Error processing cash payment:", error);
+    }
+  };
+
   const filterOrders = (status) => {
     if (status === 'active') {
       return orders.filter(order => 
-        ['pending', 'confirmed', 'preparing', 'ready'].includes(order.status)
+        ['pending', 'pending_payment', 'confirmed', 'preparing', 'ready'].includes(order.status)
       );
     }
     if (status === 'completed') {
@@ -262,10 +304,15 @@ export default function OrderManagement({ user }) {
                       <br />
                       <strong>Payment:</strong> 
                       <span className={`ms-1 ${order.payment_status === 'paid' ? 'text-success' : 'text-warning'}`}>
-                        {order.payment_status === 'paid' ? '✓ Paid' : '⏳ Pending'}
+                        {order.payment_status === 'paid' ? '✓ Paid' : 
+                         order.payment_status === 'pending_cash' ? '💵 Cash Pending' : '⏳ Pending'}
                       </span>
-                      {order.order_type === 'cashier' && order.payment_status === 'paid' && (
-                        <small className="text-muted"> (Cash)</small>
+                      {order.payment_method && (
+                        <small className="text-muted">
+                          ({order.payment_method === 'card' ? 'Card' : 
+                            order.payment_method === 'ath_movil' ? 'ATH Móvil' : 
+                            order.payment_method === 'cash' ? 'Cash' : order.payment_method})
+                        </small>
                       )}
                     </p>
 

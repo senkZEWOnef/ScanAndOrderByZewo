@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import CartModal from "../components/CartModal";
 import PaymentModal from "../components/PaymentModal";
+import PaymentSelectionModal from "../components/PaymentSelectionModal";
 
 export default function CustomerMenu() {
   const { slug } = useParams();
@@ -14,7 +15,9 @@ export default function CustomerMenu() {
   const [cart, setCart] = useState([]);
   const [showCartModal, setShowCartModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPaymentSelectionModal, setShowPaymentSelectionModal] = useState(false);
   const [pendingOrder, setPendingOrder] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showItemModal, setShowItemModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -158,10 +161,25 @@ export default function CustomerMenu() {
   };
 
   const handleCheckout = async (checkoutData) => {
+    // Store checkout data and show payment selection modal
+    setPendingOrder({
+      total: checkoutData.total,
+      items: checkoutData.items,
+      phone: checkoutData.phone,
+      instructions: checkoutData.instructions,
+      vendorName: vendor.business_name
+    });
+    setShowCartModal(false);
+    setShowPaymentSelectionModal(true);
+  };
+
+  const handlePaymentMethodSelect = async (paymentMethod) => {
+    setSelectedPaymentMethod(paymentMethod);
+    
     try {
-      // First, create or get customer
+      // Create or get customer
       let customerId;
-      const phone = checkoutData.phone.replace(/\D/g, '');
+      const phone = pendingOrder.phone.replace(/\D/g, '');
       
       const { data: existingCustomer } = await supabase
         .from("customers")
@@ -188,6 +206,15 @@ export default function CustomerMenu() {
       // Generate order number
       const orderNumber = Math.floor(Math.random() * 9000) + 1000;
 
+      // Determine payment status based on method
+      let paymentStatus = 'pending';
+      let orderStatus = 'pending';
+      
+      if (paymentMethod.id === 'cash') {
+        paymentStatus = 'pending_cash';
+        orderStatus = 'pending_payment';
+      }
+
       // Create order
       const { data: order, error: orderError } = await supabase
         .from("orders")
@@ -195,11 +222,13 @@ export default function CustomerMenu() {
           vendor_id: vendor.id,
           customer_id: customerId,
           order_number: orderNumber,
-          status: 'pending',
-          total_amount: checkoutData.total,
-          payment_status: 'pending',
-          special_instructions: checkoutData.instructions || null,
-          estimated_ready_time: new Date(Date.now() + 20 * 60 * 1000) // 20 min from now
+          status: orderStatus,
+          total_amount: pendingOrder.total,
+          payment_status: paymentStatus,
+          payment_method: paymentMethod.id,
+          special_instructions: pendingOrder.instructions || null,
+          estimated_ready_time: new Date(Date.now() + 20 * 60 * 1000), // 20 min from now
+          order_type: 'qr_code'
         }])
         .select()
         .single();
@@ -211,7 +240,7 @@ export default function CustomerMenu() {
       }
 
       // Create order items
-      const orderItems = checkoutData.items.map(item => ({
+      const orderItems = pendingOrder.items.map(item => ({
         order_id: order.id,
         menu_item_id: item.id,
         quantity: item.quantity,
@@ -228,21 +257,53 @@ export default function CustomerMenu() {
         return;
       }
 
-      // Success! Show payment modal
+      // Update pending order with complete info
       setPendingOrder({
         id: order.id,
         orderNumber: orderNumber,
-        total: checkoutData.total,
-        items: checkoutData.items,
+        total: pendingOrder.total,
+        items: pendingOrder.items,
         vendorName: vendor.business_name,
-        customerId: customerId
+        customerId: customerId,
+        paymentMethod: paymentMethod
       });
-      setShowCartModal(false);
-      setShowPaymentModal(true);
+
+      if (paymentMethod.id === 'cash') {
+        // For cash payments, go directly to confirmation
+        handleCashPaymentSuccess();
+      } else {
+        // For card/ATH Móvil, show payment modal
+        setShowPaymentModal(true);
+      }
 
     } catch (error) {
-      console.error("Checkout error:", error);
+      console.error("Order creation error:", error);
       alert("Something went wrong. Please try again.");
+    }
+  };
+
+  const handleCashPaymentSuccess = async () => {
+    try {
+      // Get customer phone for tracking URL
+      const { data: customer } = await supabase
+        .from("customers")
+        .select("phone")
+        .eq("id", pendingOrder.customerId)
+        .single();
+
+      // Close modals and clear cart
+      setShowPaymentSelectionModal(false);
+      setShowPaymentModal(false);
+      setPendingOrder(null);
+      setCart([]);
+      
+      // Redirect to order tracking page with cash payment notice
+      const phone = customer?.phone || "0000000000";
+      navigate(`/track/${pendingOrder.orderNumber}?phone=${phone}&payment=cash`);
+      
+    } catch (error) {
+      console.error("Cash payment redirect error:", error);
+      alert("Order placed! Please check your order status.");
     }
   };
 
@@ -652,6 +713,15 @@ export default function CustomerMenu() {
         isOpen={showCartModal}
         onClose={() => setShowCartModal(false)}
         onCheckout={handleCheckout}
+      />
+
+      {/* Payment Selection Modal */}
+      <PaymentSelectionModal
+        isOpen={showPaymentSelectionModal}
+        onClose={() => setShowPaymentSelectionModal(false)}
+        onPaymentMethodSelect={handlePaymentMethodSelect}
+        orderData={pendingOrder}
+        vendor={vendor}
       />
 
       {/* Payment Modal */}
