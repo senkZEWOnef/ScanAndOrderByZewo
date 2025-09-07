@@ -281,108 +281,136 @@ export default function VendorDashboard() {
   }
 
   return (
-    <div className="min-vh-100" style={{ backgroundColor: 'var(--color-gray-50)' }}>
+    <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       {/* Professional Header */}
-      <div className="ipad-status-bar">
-        <div className="d-flex align-items-center">
-          <div className="d-flex align-items-center justify-content-center me-3"
-               style={{ 
-                 width: '48px', 
-                 height: '48px',
-                 backgroundColor: 'var(--color-primary)',
-                 borderRadius: 'var(--radius-xl)'
-               }}>
-            <span className="text-white fs-4">📊</span>
+      <div className="bg-white shadow-sm" style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
+        <div className="container-fluid px-4 py-3">
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center justify-content-center me-3"
+                   style={{ 
+                     width: '48px', 
+                     height: '48px',
+                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                     borderRadius: '4px'
+                   }}>
+                <span className="text-white fs-4">📊</span>
+              </div>
+              <div>
+                <h1 className="fw-bold mb-0 text-dark">{vendorProfile?.business_name || 'Dashboard'}</h1>
+                <p className="text-muted mb-0 small">{user?.email}</p>
+              </div>
+            </div>
+            <div className="d-flex align-items-center gap-3">
+              <div className="d-flex align-items-center gap-2">
+                <div style={{ width: '8px', height: '8px', backgroundColor: '#28a745', borderRadius: '50%' }}></div>
+                <span className="text-success fw-semibold small">Online</span>
+              </div>
+              <button 
+                className="btn btn-outline-primary"
+                style={{ borderRadius: '4px' }}
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  navigate('/vendor-login');
+                }}
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
-          <div>
-            <h1 className="heading-3-modern mb-0">{vendorProfile?.business_name || 'Dashboard'}</h1>
-            <p className="text-muted-modern text-small-modern mb-0">{user?.email}</p>
-          </div>
-        </div>
-        <div className="d-flex align-items-center gap-3">
-          <div className="status-indicator-modern status-online-modern">
-            <div style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-success)', borderRadius: '50%' }}></div>
-            <span>Online</span>
-          </div>
-          <button 
-            className="btn-modern btn-secondary-modern"
-            onClick={async () => {
-              await supabase.auth.signOut();
-              navigate('/vendor-login');
-            }}
-          >
-            Sign Out
-          </button>
         </div>
       </div>
 
-      <div className="container-modern py-6">
+      <div className="container py-4">
         {/* Professional Tab Navigation */}
-        <div className="card-modern mb-6">
-          <div className="nav-tabs-modern">
-            <button 
-              className={`nav-tab-modern ${activeTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              <div className="d-flex align-items-center gap-2">
-                <span className="fs-5">📊</span>
-                <span>Dashboard</span>
-              </div>
-            </button>
-            <button 
-              className={`nav-tab-modern ${activeTab === 'orders' ? 'active' : ''}`}
-              onClick={() => setActiveTab('orders')}
-            >
-              <div className="d-flex align-items-center gap-2">
-                <span className="fs-5">📋</span>
-                <span>Orders</span>
-              </div>
-            </button>
-            <button 
-              className={`nav-tab-modern ${activeTab === 'cashier' ? 'active' : ''}`}
-              onClick={() => setActiveTab('cashier')}
-            >
-              <div className="d-flex align-items-center gap-2">
-                <span className="fs-5">💳</span>
-                <span>Cashier</span>
-              </div>
-            </button>
-            <button 
-              className={`nav-tab-modern ${activeTab === 'menu' ? 'active' : ''}`}
-              onClick={() => setActiveTab('menu')}
-            >
-              <div className="d-flex align-items-center gap-2">
-                <span className="fs-5">🍽️</span>
-                <span>Menu</span>
-              </div>
-            </button>
-            <button 
-              className={`nav-tab-modern ${activeTab === 'customize' ? 'active' : ''}`}
-              onClick={() => setActiveTab('customize')}
-            >
-              <div className="d-flex align-items-center gap-2">
-                <span className="fs-5">🎨</span>
-                <span>Customize</span>
-              </div>
-            </button>
-            <button 
-              className={`nav-tab-modern ${activeTab === 'hardware' ? 'active' : ''}`}
-              onClick={() => setActiveTab('hardware')}
-            >
-              <div className="d-flex align-items-center gap-2">
-                <span className="fs-5">💰</span>
-                <span>Hardware</span>
-              </div>
-            </button>
-            <button 
-              className={`nav-tab-modern ${activeTab === 'qr' ? 'active' : ''}`}
-              onClick={() => setActiveTab('qr')}
-            >
-              <div className="d-flex align-items-center gap-2">
-                <span className="fs-5">📱</span>
-                <span>QR Code</span>
-              </div>
-            </button>
+        <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '8px' }}>
+          <div className="card-body p-0">
+            <div className="d-flex flex-wrap border-0">
+              <button 
+                className={`btn ${activeTab === 'dashboard' ? 'btn-primary' : 'btn-outline-primary'} me-2 mb-2`}
+                style={{ borderRadius: '4px', transition: 'all 0.2s ease', transform: 'scale(1)' }}
+                onClick={() => setActiveTab('dashboard')}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
+                <div className="d-flex align-items-center gap-2">
+                  <span className="fs-5">📊</span>
+                  <span>Dashboard</span>
+                </div>
+              </button>
+              <button 
+                className={`btn ${activeTab === 'orders' ? 'btn-primary' : 'btn-outline-primary'} me-2 mb-2`}
+                style={{ borderRadius: '4px', transition: 'all 0.2s ease', transform: 'scale(1)' }}
+                onClick={() => setActiveTab('orders')}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
+                <div className="d-flex align-items-center gap-2">
+                  <span className="fs-5">📋</span>
+                  <span>Orders</span>
+                </div>
+              </button>
+              <button 
+                className={`btn ${activeTab === 'cashier' ? 'btn-primary' : 'btn-outline-primary'} me-2 mb-2`}
+                style={{ borderRadius: '4px', transition: 'all 0.2s ease', transform: 'scale(1)' }}
+                onClick={() => setActiveTab('cashier')}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
+                <div className="d-flex align-items-center gap-2">
+                  <span className="fs-5">💳</span>
+                  <span>Cashier</span>
+                </div>
+              </button>
+              <button 
+                className={`btn ${activeTab === 'menu' ? 'btn-primary' : 'btn-outline-primary'} me-2 mb-2`}
+                style={{ borderRadius: '4px', transition: 'all 0.2s ease', transform: 'scale(1)' }}
+                onClick={() => setActiveTab('menu')}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
+                <div className="d-flex align-items-center gap-2">
+                  <span className="fs-5">🍽️</span>
+                  <span>Menu</span>
+                </div>
+              </button>
+              <button 
+                className={`btn ${activeTab === 'customize' ? 'btn-primary' : 'btn-outline-primary'} me-2 mb-2`}
+                style={{ borderRadius: '4px', transition: 'all 0.2s ease', transform: 'scale(1)' }}
+                onClick={() => setActiveTab('customize')}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
+                <div className="d-flex align-items-center gap-2">
+                  <span className="fs-5">🎨</span>
+                  <span>Customize</span>
+                </div>
+              </button>
+              <button 
+                className={`btn ${activeTab === 'hardware' ? 'btn-primary' : 'btn-outline-primary'} me-2 mb-2`}
+                style={{ borderRadius: '4px', transition: 'all 0.2s ease', transform: 'scale(1)' }}
+                onClick={() => setActiveTab('hardware')}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
+                <div className="d-flex align-items-center gap-2">
+                  <span className="fs-5">💰</span>
+                  <span>Hardware</span>
+                </div>
+              </button>
+              <button 
+                className={`btn ${activeTab === 'qr' ? 'btn-primary' : 'btn-outline-primary'} me-2 mb-2`}
+                style={{ borderRadius: '4px', transition: 'all 0.2s ease', transform: 'scale(1)' }}
+                onClick={() => setActiveTab('qr')}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
+                <div className="d-flex align-items-center gap-2">
+                  <span className="fs-5">📱</span>
+                  <span>QR Code</span>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -400,11 +428,11 @@ export default function VendorDashboard() {
 
         {/* Cashier Tab */}
         {activeTab === 'cashier' && (
-          <div className="fade-in-modern ipad-full-height">
-            <div className="card-modern mb-6">
-              <div className="card-modern-header text-center">
-                <h2 className="heading-3-modern mb-2">💳 Cashier Orders</h2>
-                <p className="text-muted-modern mb-0">Create orders for customers paying at the counter</p>
+          <div className="animate__animated animate__fadeIn">
+            <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '8px' }}>
+              <div className="card-body p-4 text-center">
+                <h2 className="fw-bold text-dark mb-2">💳 Cashier Orders</h2>
+                <p className="text-muted mb-0">Create orders for customers paying at the counter</p>
               </div>
             </div>
             <CashierOrder 
@@ -436,7 +464,7 @@ export default function VendorDashboard() {
           <div className="row">
             <div className="col-12">
               {/* Menu Header with Actions */}
-              <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
+              <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '8px' }}>
                 <div className="card-body p-4">
                   <div className="row align-items-center">
                     <div className="col-lg-6">
@@ -468,7 +496,7 @@ export default function VendorDashboard() {
 
               {/* Quick Templates */}
               {menuItems.length === 0 && (
-                <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
+                <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '8px' }}>
                   <div className="card-body p-4">
                     <div className="text-center mb-4">
                       <div className="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
@@ -483,8 +511,10 @@ export default function VendorDashboard() {
                       {Object.entries(cuisineTemplates).map(([name, type]) => (
                         <div key={type} className="col-lg-3 col-md-4 col-sm-6">
                           <div className="card border-0 shadow-sm h-100" 
-                               style={{ borderRadius: '12px', cursor: 'pointer' }}
-                               onClick={() => populateMenuFromTemplate(type)}>
+                               style={{ borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s ease', transform: 'scale(1)' }}
+                               onClick={() => populateMenuFromTemplate(type)}
+                               onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)'; }}
+                               onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}>
                             <div className="card-body text-center p-4">
                               <div className="fs-1 mb-3">
                                 {type === 'mexican' && '🌮'}
@@ -518,7 +548,7 @@ export default function VendorDashboard() {
               )}
 
               {/* Add Custom Item Form */}
-              <div id="add-item-form" className="card border-0 shadow-sm mb-4" style={{ borderRadius: '16px' }}>
+              <div id="add-item-form" className="card border-0 shadow-sm mb-4" style={{ borderRadius: '8px' }}>
                 <div className="card-body p-4">
                   <h5 className="fw-bold text-dark mb-4">➕ Add Custom Menu Item</h5>
                   <form onSubmit={handleCreateItem}>
@@ -529,7 +559,7 @@ export default function VendorDashboard() {
                           type="text"
                           name="name"
                           className="form-control form-control-lg"
-                          style={{ borderRadius: '12px' }}
+                          style={{ borderRadius: '4px' }}
                           placeholder="e.g. Carne Asada Tacos"
                           value={newItem.name}
                           onChange={handleInputChange}
@@ -543,7 +573,7 @@ export default function VendorDashboard() {
                           step="0.01"
                           name="price"
                           className="form-control form-control-lg"
-                          style={{ borderRadius: '12px' }}
+                          style={{ borderRadius: '4px' }}
                           placeholder="0.00"
                           value={newItem.price}
                           onChange={handleInputChange}
@@ -555,7 +585,7 @@ export default function VendorDashboard() {
                         <select
                           name="category"
                           className="form-select form-select-lg"
-                          style={{ borderRadius: '12px' }}
+                          style={{ borderRadius: '4px' }}
                           value={newItem.category}
                           onChange={handleInputChange}
                         >
@@ -571,7 +601,7 @@ export default function VendorDashboard() {
                         <textarea
                           name="description"
                           className="form-control"
-                          style={{ borderRadius: '12px' }}
+                          style={{ borderRadius: '4px' }}
                           rows="3"
                           placeholder="Describe your delicious item..."
                           value={newItem.description}
@@ -584,7 +614,7 @@ export default function VendorDashboard() {
                           type="file"
                           accept="image/*"
                           className="form-control form-control-lg"
-                          style={{ borderRadius: '12px' }}
+                          style={{ borderRadius: '4px' }}
                           onChange={handleImageChange}
                         />
                         <div className="form-text">
@@ -596,9 +626,11 @@ export default function VendorDashboard() {
                     <div className="text-end mt-4">
                       <button 
                         className="btn btn-primary btn-lg px-4"
-                        style={{ borderRadius: '12px', background: 'linear-gradient(45deg, #28a745, #20c997)' }}
+                        style={{ borderRadius: '4px', background: 'linear-gradient(45deg, #28a745, #20c997)', transition: 'all 0.2s ease', transform: 'scale(1)' }}
                         type="submit" 
                         disabled={loading}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
                       >
                         {loading ? (
                           <>
@@ -616,7 +648,7 @@ export default function VendorDashboard() {
 
               {/* Current Menu Items */}
               {menuItems.length > 0 && (
-                <div className="card border-0 shadow-sm" style={{ borderRadius: '16px' }}>
+                <div className="card border-0 shadow-sm" style={{ borderRadius: '8px' }}>
                   <div className="card-body p-4">
                     <div className="d-flex justify-content-between align-items-center mb-4">
                       <h5 className="fw-bold text-dark mb-0">📋 Current Menu Items</h5>
@@ -627,14 +659,14 @@ export default function VendorDashboard() {
                       {menuItems.map((item) => (
                         <div key={item.id} className="col-lg-6">
                           {editingItemId === item.id ? (
-                            <div className="card border-2 border-primary" style={{ borderRadius: '12px' }}>
+                            <div className="card border-2 border-primary" style={{ borderRadius: '8px' }}>
                               <div className="card-body p-3">
                                 <div className="mb-3">
                                   <input
                                     type="text"
                                     name="name"
                                     className="form-control mb-2"
-                                    style={{ borderRadius: '8px' }}
+                                    style={{ borderRadius: '4px' }}
                                     value={editedItem.name}
                                     onChange={handleEditChange}
                                     placeholder="Item name"
@@ -642,7 +674,7 @@ export default function VendorDashboard() {
                                   <textarea
                                     name="description"
                                     className="form-control mb-2"
-                                    style={{ borderRadius: '8px' }}
+                                    style={{ borderRadius: '4px' }}
                                     rows="2"
                                     value={editedItem.description}
                                     onChange={handleEditChange}
@@ -653,7 +685,7 @@ export default function VendorDashboard() {
                                     step="0.01"
                                     name="price"
                                     className="form-control mb-2"
-                                    style={{ borderRadius: '8px' }}
+                                    style={{ borderRadius: '4px' }}
                                     value={editedItem.price}
                                     onChange={handleEditChange}
                                     placeholder="Price"
@@ -661,7 +693,7 @@ export default function VendorDashboard() {
                                   <select
                                     name="category"
                                     className="form-select"
-                                    style={{ borderRadius: '8px' }}
+                                    style={{ borderRadius: '4px' }}
                                     value={editedItem.category}
                                     onChange={handleEditChange}
                                   >
@@ -690,16 +722,16 @@ export default function VendorDashboard() {
                             </div>
                           ) : (
                             <div className="card border-0 shadow-sm h-100" 
-                                 style={{ borderRadius: '12px', transition: 'transform 0.2s' }}
-                                 onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                 onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
+                                 style={{ borderRadius: '8px', transition: 'all 0.2s ease', transform: 'scale(1)', cursor: 'pointer' }}
+                                 onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)'; }}
+                                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}>
                               <div className="card-body p-3">
                                 <div className="d-flex align-items-start gap-3">
                                   {item.image_url ? (
                                     <img
                                       src={item.image_url}
                                       alt={item.name}
-                                      className="rounded-3"
+                                      className="rounded-2"
                                       style={{
                                         width: "80px",
                                         height: "80px",
@@ -709,7 +741,7 @@ export default function VendorDashboard() {
                                     />
                                   ) : (
                                     <div
-                                      className="bg-light rounded-3 d-flex align-items-center justify-content-center"
+                                      className="bg-light rounded-2 d-flex align-items-center justify-content-center"
                                       style={{ width: "80px", height: "80px", flexShrink: 0 }}
                                     >
                                       <span className="text-muted fs-4">🍽️</span>
@@ -724,14 +756,14 @@ export default function VendorDashboard() {
                                         <button
                                           className="btn btn-outline-primary btn-sm"
                                           onClick={() => handleEdit(item)}
-                                          style={{ borderRadius: '8px' }}
+                                          style={{ borderRadius: '4px' }}
                                         >
                                           ✏️
                                         </button>
                                         <button
                                           className="btn btn-outline-danger btn-sm"
                                           onClick={() => handleDelete(item.id)}
-                                          style={{ borderRadius: '8px' }}
+                                          style={{ borderRadius: '4px' }}
                                         >
                                           🗑️
                                         </button>
@@ -754,7 +786,7 @@ export default function VendorDashboard() {
 
         {/* QR Code Tab */}
         {activeTab === 'qr' && vendorProfile && (
-          <div className="card border-0 shadow-sm" style={{ borderRadius: '16px' }}>
+          <div className="card border-0 shadow-sm" style={{ borderRadius: '8px' }}>
             <div className="card-body p-4">
               <div className="text-center mb-4">
                 <h4 className="fw-bold text-dark mb-2">📱 Your QR Code Menu</h4>
@@ -769,13 +801,13 @@ export default function VendorDashboard() {
                       <input
                         type="text"
                         className="form-control form-control-lg"
-                        style={{ borderRadius: '12px 0 0 12px' }}
+                        style={{ borderRadius: '4px 0 0 4px' }}
                         value={getMenuUrl()}
                         readOnly
                       />
                       <button 
                         className="btn btn-primary"
-                        style={{ borderRadius: '0 12px 12px 0' }}
+                        style={{ borderRadius: '0 4px 4px 0' }}
                         onClick={copyMenuUrl}
                       >
                         📋 Copy URL
@@ -784,11 +816,11 @@ export default function VendorDashboard() {
                   </div>
                   
                   <div className="text-center">
-                    <div className="bg-white p-4 rounded-4 shadow-sm d-inline-block mb-3">
+                    <div className="bg-white p-4 rounded-3 shadow-sm d-inline-block mb-3">
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(getMenuUrl())}`}
                         alt="QR Code for menu"
-                        className="rounded-3"
+                        className="rounded-2"
                         style={{ width: '250px', height: '250px' }}
                       />
                     </div>

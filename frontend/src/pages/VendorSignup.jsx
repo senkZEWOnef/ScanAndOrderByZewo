@@ -58,8 +58,12 @@ export default function VendorSignup() {
             <div className="card shadow-lg border-0" style={{ borderRadius: '20px' }}>
               <div className="card-body p-5">
                 <div className="text-center mb-4">
-                  <div className="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                       style={{ width: '80px', height: '80px' }}>
+                  <div className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                       style={{ 
+                         width: '80px', 
+                         height: '80px',
+                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                       }}>
                     <span className="text-white fs-1">🚀</span>
                   </div>
                   <h2 className="fw-bold text-dark mb-2">Start Your Food Truck Journey</h2>
@@ -141,8 +145,8 @@ export default function VendorSignup() {
 
                   <button 
                     type="submit" 
-                    className="btn btn-primary btn-lg w-100 fw-bold py-3 mb-3"
-                    style={{ borderRadius: '12px', background: 'linear-gradient(45deg, #667eea, #764ba2)' }}
+                    className="btn btn-warning btn-lg w-100 fw-bold py-3 mb-3 text-dark"
+                    style={{ borderRadius: '12px' }}
                     disabled={loading}
                   >
                     {loading ? (
