@@ -14,7 +14,7 @@ export default function VendorLogin() {
     setLoading(true);
     setErrorMsg("");
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -22,6 +22,7 @@ export default function VendorLogin() {
     setLoading(false);
 
     if (error) {
+      console.error("Login error:", error);
       setErrorMsg(error.message);
     } else {
       navigate("/vendor-dashboard");

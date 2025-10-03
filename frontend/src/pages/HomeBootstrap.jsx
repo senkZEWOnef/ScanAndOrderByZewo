@@ -174,7 +174,7 @@ export default function Home() {
           
           <div className="row g-4 justify-content-center">
             {/* Starter Plan */}
-            <div className="col-xl-4 col-lg-6 col-md-6">
+            <div className="col-lg-4 col-md-6">
               <div className="card border-0 shadow-lg h-100" style={{ borderRadius: '20px' }}>
                 <div className="card-body p-5 text-center">
                   <div className="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-4" 
@@ -212,7 +212,7 @@ export default function Home() {
             </div>
 
             {/* Professional Plan - MOST POPULAR */}
-            <div className="col-xl-4 col-lg-6 col-md-6">
+            <div className="col-lg-4 col-md-6">
               <div className="card border-0 shadow-xl h-100 position-relative" 
                    style={{ borderRadius: '20px', transform: 'scale(1.05)' }}>
                 <div className="position-absolute top-0 start-50 translate-middle">
@@ -250,50 +250,6 @@ export default function Home() {
                     style={{ borderRadius: '12px' }}
                   >
                     Start Free Trial
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Ultimate Plan - ENTERPRISE */}
-            <div className="col-xl-4 col-lg-6 col-md-6">
-              <div className="card border-0 shadow-xxl h-100 position-relative" 
-                   style={{ borderRadius: '20px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                <div className="position-absolute top-0 start-50 translate-middle">
-                  <span className="badge bg-danger text-white px-4 py-2 fw-bold" style={{ borderRadius: '20px' }}>
-                    💎 ENTERPRISE
-                  </span>
-                </div>
-                <div className="card-body p-5 text-center text-white">
-                  <div className="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-4" 
-                       style={{ width: '80px', height: '80px' }}>
-                    <span className="fs-1 text-dark">💎</span>
-                  </div>
-                  <h3 className="fw-bold mb-3 text-white">Ultimate</h3>
-                  <p className="text-light opacity-90 mb-4">Enterprise solution with white-label options & dedicated support</p>
-                  
-                  <div className="mb-4">
-                    <div className="display-6 fw-bold text-warning">$500<span className="fs-6 text-light opacity-75">/month</span></div>
-                    <div className="text-warning fw-semibold">or $4,800/year (save $1,200)</div>
-                  </div>
-                  
-                  <ul className="list-unstyled text-start mb-4">
-                    <li className="mb-2"><span className="text-warning">✅</span> <strong className="text-white">Everything in Professional</strong></li>
-                    <li className="mb-2"><span className="text-warning">✅</span> <span className="text-white">White-Label Solution</span></li>
-                    <li className="mb-2"><span className="text-warning">✅</span> <span className="text-white">API Access & Webhooks</span></li>
-                    <li className="mb-2"><span className="text-warning">✅</span> <span className="text-white">Custom Integrations</span></li>
-                    <li className="mb-2"><span className="text-warning">✅</span> <span className="text-white">Dedicated Account Manager</span></li>
-                    <li className="mb-2"><span className="text-warning">✅</span> <span className="text-white">Franchise Management</span></li>
-                    <li className="mb-2"><span className="text-warning">✅</span> <span className="text-white"><strong>Enterprise SLA</strong></span></li>
-                    <li className="mb-2"><span className="text-warning">✅</span> <span className="text-white"><strong>Custom Development</strong></span></li>
-                  </ul>
-                  
-                  <Link 
-                    to="/vendor-signup" 
-                    className="btn btn-warning btn-lg w-100 py-3 fw-bold text-dark"
-                    style={{ borderRadius: '12px' }}
-                  >
-                    Contact Sales
                   </Link>
                 </div>
               </div>

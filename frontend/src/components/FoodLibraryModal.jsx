@@ -9,6 +9,8 @@ export default function FoodLibraryModal({
 }) {
   const [selectedCuisine, setSelectedCuisine] = useState('mexican');
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingItem, setEditingItem] = useState(null);
+  const [newImageUrl, setNewImageUrl] = useState('');
 
   if (!isOpen) return null;
 
@@ -112,13 +114,23 @@ export default function FoodLibraryModal({
                       <p className="text-muted small mb-3 lh-sm">{item.description}</p>
                       <div className="d-flex justify-content-between align-items-center">
                         <span className="badge bg-light text-dark">{item.category}</span>
-                        <button
-                          className="btn btn-primary btn-sm"
-                          style={{ borderRadius: '8px' }}
-                          onClick={() => onAddItem(item)}
-                        >
-                          Add to Menu
-                        </button>
+                        <div className="d-flex gap-2">
+                          <button
+                            className="btn btn-outline-secondary btn-sm"
+                            style={{ borderRadius: '8px' }}
+                            onClick={() => setEditingItem(item)}
+                            title="Edit Image"
+                          >
+                            📝
+                          </button>
+                          <button
+                            className="btn btn-primary btn-sm"
+                            style={{ borderRadius: '8px' }}
+                            onClick={() => onAddItem(item)}
+                          >
+                            Add to Menu
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -142,6 +154,98 @@ export default function FoodLibraryModal({
           </div>
         </div>
       </div>
+      
+      {/* Image Edit Modal */}
+      {editingItem && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1060 }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content" style={{ borderRadius: '20px' }}>
+              <div className="modal-header border-0 p-4">
+                <h5 className="modal-title fw-bold">🖼️ Edit Image for {editingItem.name}</h5>
+                <button 
+                  type="button" 
+                  className="btn-close" 
+                  onClick={() => {
+                    setEditingItem(null);
+                    setNewImageUrl('');
+                  }}
+                ></button>
+              </div>
+              <div className="modal-body p-4">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Current Image:</label>
+                  <div className="text-center mb-3">
+                    <img 
+                      src={editingItem.image_url} 
+                      alt={editingItem.name}
+                      className="img-fluid"
+                      style={{ maxHeight: '200px', borderRadius: '12px' }}
+                    />
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">New Image URL:</label>
+                  <input
+                    type="url"
+                    className="form-control form-control-lg"
+                    style={{ borderRadius: '12px' }}
+                    placeholder="https://images.unsplash.com/..."
+                    value={newImageUrl}
+                    onChange={(e) => setNewImageUrl(e.target.value)}
+                  />
+                  <div className="form-text">Tip: Use high-quality food images from Unsplash or similar sources</div>
+                </div>
+                {newImageUrl && (
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Preview:</label>
+                    <div className="text-center">
+                      <img 
+                        src={newImageUrl} 
+                        alt="Preview"
+                        className="img-fluid"
+                        style={{ maxHeight: '200px', borderRadius: '12px' }}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer border-0 p-4">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setEditingItem(null);
+                    setNewImageUrl('');
+                  }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-primary"
+                  onClick={() => {
+                    if (newImageUrl.trim()) {
+                      // Update the item's image URL in the library
+                      editingItem.image_url = newImageUrl.trim();
+                      setEditingItem(null);
+                      setNewImageUrl('');
+                      // Force re-render by updating state
+                      setSearchTerm(searchTerm + ' ');
+                      setSearchTerm(searchTerm.trim());
+                    }
+                  }}
+                  disabled={!newImageUrl.trim()}
+                >
+                  Update Image
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
