@@ -1,27 +1,52 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export default function Navigation() {
+  const [language, setLanguage] = useState('es'); // Default to Spanish
+  
+  const translations = {
+    es: {
+      home: "Inicio",
+      signup: "Registro",
+      login: "Iniciar Sesión", 
+      dashboard: "Panel"
+    },
+    en: {
+      home: "Home",
+      signup: "Signup",
+      login: "Login",
+      dashboard: "Dashboard"
+    }
+  };
+
+  const t = translations[language];
   return (
     <Navbar bg="dark" data-bs-theme="dark" expand="lg">
-      <Container>
-        <Navbar.Brand as={Link} to="/">
-          <span className="fw-bold">Escanea <span className="text-warning">byZewo</span></span>
+      <Container fluid className="px-5">
+        <Navbar.Brand as={Link} to="/" style={{ marginLeft: '120px' }}>
+          <span className="fw-bold text-white" style={{ 
+            fontSize: '1.4rem',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            letterSpacing: '0.5px'
+          }}>
+            Escanea <span className="text-warning">PR</span>
+          </span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
-          <Nav className="ms-auto">
+          <Nav style={{ marginLeft: 'auto', marginRight: '80px' }}>
             <Nav.Link as={Link} to="/">
-              Home
+              {t.home}
             </Nav.Link>
             <Nav.Link as={Link} to="/vendor-signup">
-              Signup
+              {t.signup}
             </Nav.Link>
             <Nav.Link as={Link} to="/vendor-login">
-              Login
+              {t.login}
             </Nav.Link>
             <Nav.Link as={Link} to="/vendor-dashboard">
-              Dashboard
+              {t.dashboard}
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>

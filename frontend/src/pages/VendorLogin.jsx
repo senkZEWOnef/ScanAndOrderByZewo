@@ -7,7 +7,45 @@ export default function VendorLogin() {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
+  const [language, setLanguage] = useState('es'); // Default to Spanish
   const navigate = useNavigate();
+
+  const translations = {
+    es: {
+      welcomeBack: "¡Bienvenido de Vuelta!",
+      signInText: "Inicia sesión en tu panel de food truck",
+      emailLabel: "Dirección de Email",
+      emailPlaceholder: "tu@email.com",
+      passwordLabel: "Contraseña",
+      passwordPlaceholder: "Ingresa tu contraseña",
+      signingIn: "Iniciando Sesión...",
+      signInButton: "🚀 Iniciar Sesión al Panel",
+      noAccount: "¿No tienes cuenta?",
+      startTrial: "Comenzar Prueba Gratis",
+      quickAccess: "Acceso Rápido a Funciones",
+      orders: "Pedidos",
+      menu: "Menú",
+      analytics: "Análisis"
+    },
+    en: {
+      welcomeBack: "Welcome Back!",
+      signInText: "Sign in to your food truck dashboard",
+      emailLabel: "Email Address",
+      emailPlaceholder: "your@email.com",
+      passwordLabel: "Password",
+      passwordPlaceholder: "Enter your password",
+      signingIn: "Signing In...",
+      signInButton: "🚀 Sign In to Dashboard",
+      noAccount: "Don't have an account?",
+      startTrial: "Start Free Trial",
+      quickAccess: "Quick Access Features",
+      orders: "Orders",
+      menu: "Menu",
+      analytics: "Analytics"
+    }
+  };
+
+  const t = translations[language];
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -32,6 +70,17 @@ export default function VendorLogin() {
   return (
     <div className="min-vh-100 d-flex align-items-center" 
          style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      {/* Language Toggle */}
+      <div className="position-fixed top-0 end-0 p-3" style={{ zIndex: 1000 }}>
+        <button
+          onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
+          className="btn btn-light btn-sm shadow-sm"
+          style={{ borderRadius: '50%', width: '50px', height: '50px' }}
+        >
+          <span style={{ fontSize: '20px' }}>{language === 'es' ? '🇺🇸' : '🇵🇷'}</span>
+        </button>
+      </div>
+      
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-5 col-xl-4">
@@ -46,18 +95,18 @@ export default function VendorLogin() {
                        }}>
                     <span className="text-white fs-1">👋</span>
                   </div>
-                  <h2 className="fw-bold text-dark mb-2">Welcome Back!</h2>
-                  <p className="text-muted">Sign in to your food truck dashboard</p>
+                  <h2 className="fw-bold text-dark mb-2">{t.welcomeBack}</h2>
+                  <p className="text-muted">{t.signInText}</p>
                 </div>
 
                 <form onSubmit={handleLogin}>
                   <div className="mb-4">
-                    <label className="form-label fw-semibold text-dark">Email Address</label>
+                    <label className="form-label fw-semibold text-dark">{t.emailLabel}</label>
                     <input
                       type="email"
                       className="form-control form-control-lg"
                       style={{ borderRadius: '12px', border: '2px solid #e9ecef' }}
-                      placeholder="your@email.com"
+                      placeholder={t.emailPlaceholder}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -65,12 +114,12 @@ export default function VendorLogin() {
                   </div>
 
                   <div className="mb-4">
-                    <label className="form-label fw-semibold text-dark">Password</label>
+                    <label className="form-label fw-semibold text-dark">{t.passwordLabel}</label>
                     <input
                       type="password"
                       className="form-control form-control-lg"
                       style={{ borderRadius: '12px', border: '2px solid #e9ecef' }}
-                      placeholder="Enter your password"
+                      placeholder={t.passwordPlaceholder}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -93,20 +142,20 @@ export default function VendorLogin() {
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" />
-                        Signing In...
+                        {t.signingIn}
                       </>
                     ) : (
                       <>
-                        🚀 Sign In to Dashboard
+                        {t.signInButton}
                       </>
                     )}
                   </button>
 
                   <div className="text-center">
                     <small className="text-muted">
-                      Don't have an account? 
+                      {t.noAccount}
                       <a href="/vendor-signup" className="text-primary fw-semibold text-decoration-none ms-1">
-                        Start Free Trial
+                        {t.startTrial}
                       </a>
                     </small>
                   </div>
@@ -115,19 +164,19 @@ export default function VendorLogin() {
                 <hr className="my-4" />
                 
                 <div className="text-center">
-                  <p className="text-muted small mb-3">Quick Access Features</p>
+                  <p className="text-muted small mb-3">{t.quickAccess}</p>
                   <div className="row text-center">
                     <div className="col-4">
                       <div className="text-primary fw-bold">📋</div>
-                      <div className="small text-muted">Orders</div>
+                      <div className="small text-muted">{t.orders}</div>
                     </div>
                     <div className="col-4">
                       <div className="text-success fw-bold">🍽️</div>
-                      <div className="small text-muted">Menu</div>
+                      <div className="small text-muted">{t.menu}</div>
                     </div>
                     <div className="col-4">
                       <div className="text-warning fw-bold">📊</div>
-                      <div className="small text-muted">Analytics</div>
+                      <div className="small text-muted">{t.analytics}</div>
                     </div>
                   </div>
                 </div>

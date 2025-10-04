@@ -11,16 +11,24 @@ export default function CashierOrder({ user, onOrderCreated }) {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [drawerSettings, setDrawerSettings] = useState({ autoOpen: true });
   const [drawerStatus, setDrawerStatus] = useState({ isConnected: false });
+
+  const menuCategories = [
+    { value: 'all', label: 'All Items', icon: '🍽️' },
+    { value: 'appetizer', label: 'Appetizers', icon: '🥗' },
+    { value: 'main', label: 'Main Dishes', icon: '🍔' },
+    { value: 'side', label: 'Sides', icon: '🍟' },
+    { value: 'drink', label: 'Drinks', icon: '🥤' },
+    { value: 'dessert', label: 'Desserts', icon: '🍰' },
+    { value: 'combo', label: 'Combos', icon: '🍽️' },
+    { value: 'special', label: 'Specials', icon: '⭐' },
+  ];
 
   useEffect(() => {
     if (user) {
       fetchMenuItems();
-      loadDrawerSettings();
       updateDrawerStatus();
       
-      // Update drawer status periodically
       const interval = setInterval(updateDrawerStatus, 5000);
       return () => clearInterval(interval);
     }
@@ -29,30 +37,6 @@ export default function CashierOrder({ user, onOrderCreated }) {
   const updateDrawerStatus = () => {
     const status = cashDrawer.getStatus();
     setDrawerStatus(status);
-  };
-
-  const loadDrawerSettings = () => {
-    const savedSettings = localStorage.getItem('cashDrawerSettings');
-    if (savedSettings) {
-      try {
-        const settings = JSON.parse(savedSettings);
-        setDrawerSettings(settings);
-      } catch (error) {
-        console.error('Error loading drawer settings:', error);
-      }
-    }
-  };
-
-  const openCashDrawer = async () => {
-    try {
-      if (drawerSettings.autoOpen && cashDrawer.getStatus().isConnected) {
-        await cashDrawer.openDrawer();
-        console.log('Cash drawer opened automatically');
-      }
-    } catch (error) {
-      console.error('Failed to open cash drawer:', error);
-      // Don't block order creation if drawer fails
-    }
   };
 
   const fetchMenuItems = async () => {
@@ -105,440 +89,303 @@ export default function CashierOrder({ user, onOrderCreated }) {
 
   const clearCart = () => {
     setCart([]);
+    setCustomerPhone("");
+    setCustomerName("");
+    setSpecialInstructions("");
   };
 
-  const getCartTotal = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const getTotalAmount = () => {
+    return cart.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
   };
 
-  const getCartItemCount = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const categorizeMenuItems = () => {
-    const categories = {
-      appetizers: [],
-      mains: [],
-      sides: [],
-      drinks: [],
-      desserts: [],
-      other: []
-    };
-    
-    menuItems.forEach(item => {
-      const category = item.category?.toLowerCase() || 'other';
-      if (category === 'appetizer' || category.includes('appetizer') || category.includes('starter')) {
-        categories.appetizers.push(item);
-      } else if (category === 'drink' || category.includes('drink') || category.includes('beverage')) {
-        categories.drinks.push(item);
-      } else if (category === 'dessert' || category.includes('dessert') || category.includes('sweet')) {
-        categories.desserts.push(item);
-      } else if (category === 'side' || category.includes('side')) {
-        categories.sides.push(item);
-      } else if (category === 'main' || category.includes('main') || category.includes('entree') || category.includes('burger') || category.includes('pizza') || category.includes('taco')) {
-        categories.mains.push(item);
-      } else {
-        categories.other.push(item);
-      }
-    });
-    
-    return categories;
-  };
-
-  const filteredMenuItems = () => {
-    let items = menuItems;
-    
-    if (selectedCategory !== 'all') {
-      const categories = categorizeMenuItems();
-      items = categories[selectedCategory] || [];
-    }
-    
-    if (searchTerm) {
-      items = items.filter(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    return items;
-  };
-
-  const handleCreateOrder = async () => {
-    if (!customerPhone.trim()) {
-      alert("Please enter customer phone number");
-      return;
-    }
-    
+  const createOrder = async () => {
     if (cart.length === 0) {
-      alert("Please add items to cart");
+      alert("Please add items to the cart");
       return;
     }
 
     setLoading(true);
-    
-    try {
-      // Create or get customer
-      let customerId;
-      const phone = customerPhone.replace(/\D/g, '');
-      
-      const { data: existingCustomer } = await supabase
-        .from("customers")
-        .select("id")
-        .eq("phone", phone)
-        .single();
 
-      if (existingCustomer) {
-        customerId = existingCustomer.id;
-      } else {
-        const { data: newCustomer, error: customerError } = await supabase
+    try {
+      // Create customer if needed
+      let customerId = null;
+      if (customerPhone || customerName) {
+        const { data: customerData, error: customerError } = await supabase
           .from("customers")
-          .insert([{ 
-            phone,
-            name: customerName || null
-          }])
+          .upsert([{ phone: customerPhone, name: customerName }], { onConflict: 'phone' })
           .select()
           .single();
 
-        if (customerError) {
-          alert("Error creating customer record");
-          return;
-        }
-        customerId = newCustomer.id;
+        if (customerError) throw customerError;
+        customerId = customerData.id;
       }
 
-      // Generate order number
-      const orderNumber = Math.floor(Math.random() * 9000) + 1000;
-
       // Create order
-      const { data: order, error: orderError } = await supabase
+      const { data: orderData, error: orderError } = await supabase
         .from("orders")
-        .insert([{
-          vendor_id: user.id,
-          customer_id: customerId,
-          order_number: orderNumber,
-          status: 'pending',
-          total_amount: getCartTotal(),
-          payment_status: 'paid', // Cashier orders are paid in cash
-          special_instructions: specialInstructions || null,
-          estimated_ready_time: new Date(Date.now() + 20 * 60 * 1000), // 20 min from now
-          order_type: 'cashier' // Mark as cashier order
-        }])
+        .insert([
+          {
+            vendor_id: user.id,
+            customer_id: customerId,
+            total_amount: getTotalAmount(),
+            status: "pending",
+            special_instructions: specialInstructions,
+          }
+        ])
         .select()
         .single();
 
-      if (orderError) {
-        alert("Error creating order: " + orderError.message);
-        return;
-      }
+      if (orderError) throw orderError;
 
       // Create order items
       const orderItems = cart.map(item => ({
-        order_id: order.id,
+        order_id: orderData.id,
         menu_item_id: item.id,
         quantity: item.quantity,
-        unit_price: item.price
+        price: parseFloat(item.price),
       }));
 
       const { error: itemsError } = await supabase
         .from("order_items")
         .insert(orderItems);
 
-      if (itemsError) {
-        alert("Error saving order items: " + itemsError.message);
-        return;
+      if (itemsError) throw itemsError;
+
+      // Try to open cash drawer
+      try {
+        if (drawerStatus.isConnected) {
+          await cashDrawer.openDrawer();
+        }
+      } catch (drawerError) {
+        console.error('Failed to open cash drawer:', drawerError);
       }
 
-      // Success! Open cash drawer if enabled
-      await openCashDrawer();
-      
-      // Clear the form
-      setCart([]);
-      setCustomerPhone("");
-      setCustomerName("");
-      setSpecialInstructions("");
-      
-      alert(`✅ Order #${orderNumber} created successfully!`);
-      
-      if (onOrderCreated) {
-        onOrderCreated(order);
-      }
+      alert(`Order #${orderData.id} created successfully!`);
+      clearCart();
+      if (onOrderCreated) onOrderCreated();
 
     } catch (error) {
-      console.error("Order creation error:", error);
-      alert("Something went wrong. Please try again.");
+      console.error("Error creating order:", error);
+      alert("Error creating order: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const filteredItems = menuItems.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
-    <div className="ipad-grid">
-      {/* Left Panel - Menu Items */}
-      <div className="flex-grow-1">
-        <div className="card-modern mb-4">
-          <div className="card-modern-header">
-            <h3 className="heading-3-modern mb-0">🛒 Select Menu Items</h3>
-          </div>
-          <div className="card-modern-body">
-            
-            {/* Search and Filter */}
-            <div className="form-modern mb-6">
-              <div className="grid-modern grid-cols-2-modern gap-4">
-                <div className="form-group-modern">
+    <div className="row g-4">
+      {/* Menu Items Panel */}
+      <div className="col-lg-8">
+        <div className="card border-0 shadow-sm" style={{ borderRadius: '20px' }}>
+          <div className="card-header border-0 bg-white" style={{ borderRadius: '20px 20px 0 0' }}>
+            <div className="row g-3 align-items-center">
+              <div className="col-md-6">
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-0">🔍</span>
                   <input
                     type="text"
-                    className="form-input-modern"
-                    placeholder="🔍 Search menu items..."
+                    className="form-control border-0 bg-light"
+                    placeholder="Search menu items..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <div className="form-group-modern">
-                  <select
-                    className="form-input-modern"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                  >
-                    <option value="all">All Categories</option>
-                    <option value="mains">🍔 Mains</option>
-                    <option value="appetizers">🥗 Appetizers</option>
-                    <option value="sides">🍟 Sides</option>
-                    <option value="drinks">🥤 Drinks</option>
-                    <option value="desserts">🍰 Desserts</option>
-                    <option value="other">🍽️ Other</option>
-                  </select>
-                </div>
+              </div>
+              <div className="col-md-6">
+                <select
+                  className="form-select bg-light border-0"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  {menuCategories.map(category => (
+                    <option key={category.value} value={category.value}>
+                      {category.icon} {category.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-
-            {/* Menu Items Grid */}
-            <div className="ipad-card-grid ipad-scroll">
-              {filteredMenuItems().map((item) => (
-                <div key={item.id}>
-                  <div className="card-modern hover-lift-modern h-100">
-                    <div className="p-4">
-                      <div className="d-flex align-items-start gap-3">
-                        {item.image_url ? (
+          </div>
+          
+          <div className="card-body" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+            {filteredItems.length === 0 ? (
+              <div className="text-center py-5">
+                <div className="fs-1 mb-3">🍽️</div>
+                <h5 className="text-muted">No menu items found</h5>
+                <p className="text-muted">Try adjusting your search or category filter</p>
+              </div>
+            ) : (
+              <div className="row g-3">
+                {filteredItems.map((item) => (
+                  <div key={item.id} className="col-md-6 col-lg-4">
+                    <div 
+                      className="card border-0 shadow-sm h-100 cursor-pointer"
+                      style={{ borderRadius: '15px', cursor: 'pointer' }}
+                      onClick={() => addToCart(item)}
+                    >
+                      {item.image_url && (
+                        <div style={{ height: '120px', overflow: 'hidden', borderRadius: '15px 15px 0 0' }}>
                           <img
                             src={item.image_url}
                             alt={item.name}
-                            style={{
-                              width: "64px",
-                              height: "64px",
-                              objectFit: "cover",
-                              borderRadius: 'var(--radius-lg)',
-                              flexShrink: 0
-                            }}
+                            className="w-100 h-100"
+                            style={{ objectFit: 'cover' }}
                           />
-                        ) : (
-                          <div
-                            style={{ 
-                              width: "64px", 
-                              height: "64px", 
-                              backgroundColor: 'var(--color-gray-100)',
-                              borderRadius: 'var(--radius-lg)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0
+                        </div>
+                      )}
+                      <div className="card-body p-3">
+                        <h6 className="card-title mb-1">{item.name}</h6>
+                        <p className="card-text text-muted small mb-2" style={{ fontSize: '0.85rem', height: '40px', overflow: 'hidden' }}>
+                          {item.description}
+                        </p>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="h6 text-success mb-0 fw-bold">${parseFloat(item.price).toFixed(2)}</span>
+                          <button 
+                            className="btn btn-primary btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(item);
                             }}
                           >
-                            <span style={{ fontSize: '1.5rem' }}>🍽️</span>
-                          </div>
-                        )}
-                        <div className="flex-grow-1">
-                          <h4 className="fw-semibold mb-1" style={{ color: 'var(--color-gray-800)' }}>{item.name}</h4>
-                          <p className="text-muted-modern text-small-modern mb-3">{item.description}</p>
-                          <div className="d-flex justify-content-between align-items-center">
-                            <span className="fw-bold" style={{ color: 'var(--color-success)', fontSize: 'var(--text-lg)' }}>${item.price.toFixed(2)}</span>
-                            <button
-                              className="btn-modern btn-primary-modern clickable-modern"
-                              onClick={() => addToCart(item)}
-                            >
-                              Add
-                            </button>
-                          </div>
+                            + Add
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {filteredMenuItems().length === 0 && (
-              <div className="text-center py-8">
-                <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>🍽️</div>
-                <p className="text-muted-modern">No menu items found</p>
+                ))}
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Right Panel - Cart and Customer Info */}
-      <div style={{ width: '400px', flexShrink: 0 }}>
-        {/* Cash Drawer Status */}
-        {drawerSettings.autoOpen && (
-          <div className="card-modern mb-4">
-            <div className="p-3">
-              <div className="d-flex align-items-center gap-3">
-                <span style={{ fontSize: '1.5rem' }}>
-                  {drawerStatus.isConnected ? '💰' : '🔌'}
-                </span>
-                <div className="flex-grow-1">
-                  <div className="fw-semibold" style={{ color: 'var(--color-gray-800)' }}>
-                    Cash Drawer: {drawerStatus.isConnected ? 'Connected' : 'Not Connected'}
-                  </div>
-                  <div className="text-muted-modern text-small-modern">
-                    {drawerStatus.isConnected 
-                      ? 'Will open automatically when order is completed'
-                      : 'Connect in Hardware settings to enable auto-open'
-                    }
-                  </div>
-                </div>
-              </div>
+      {/* Cart Panel */}
+      <div className="col-lg-4">
+        <div className="card border-0 shadow-sm" style={{ borderRadius: '20px' }}>
+          <div className="card-header border-0 bg-primary text-white" style={{ borderRadius: '20px 20px 0 0' }}>
+            <div className="d-flex justify-content-between align-items-center">
+              <h5 className="mb-0">🛒 Order Cart</h5>
+              <span className="badge bg-light text-primary">{cart.length}</span>
             </div>
           </div>
-        )}
-
-        {/* Customer Information */}
-        <div className="card-modern mb-4">
-          <div className="card-modern-header">
-            <h3 className="heading-3-modern mb-0">👤 Customer Information</h3>
-          </div>
-          <div className="card-modern-body">
-            <div className="form-modern">
-              <div className="form-group-modern">
-                <label className="form-label-modern">Phone Number *</label>
-                <input
-                  type="tel"
-                  className="form-input-modern"
-                  placeholder="(555) 123-4567"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-group-modern">
-                <label className="form-label-modern">Customer Name (Optional)</label>
+          
+          <div className="card-body">
+            {/* Customer Info */}
+            <div className="mb-4">
+              <h6 className="fw-bold mb-3">Customer Information</h6>
+              <div className="mb-2">
                 <input
                   type="text"
-                  className="form-input-modern"
-                  placeholder="John Doe"
+                  className="form-control"
+                  placeholder="Customer Name (Optional)"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                 />
               </div>
-
-              <div className="form-group-modern">
-                <label className="form-label-modern">Special Instructions</label>
-                <textarea
-                  className="form-input-modern"
-                  rows="3"
-                  placeholder="Any special requests or notes..."
-                  value={specialInstructions}
-                  onChange={(e) => setSpecialInstructions(e.target.value)}
-                  style={{ resize: 'vertical', minHeight: '80px' }}
+              <div className="mb-2">
+                <input
+                  type="tel"
+                  className="form-control"
+                  placeholder="Phone Number (Optional)"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
                 />
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Cart Summary */}
-        <div className="card-modern">
-          <div className="card-modern-header">
-            <div className="d-flex justify-content-between align-items-center">
-              <h3 className="heading-3-modern mb-0">🛒 Order Summary</h3>
-              {cart.length > 0 && (
-                <button
-                  className="btn-modern btn-secondary-modern text-small-modern"
-                  onClick={clearCart}
-                >
-                  Clear All
-                </button>
+            {/* Cart Items */}
+            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+              {cart.length === 0 ? (
+                <div className="text-center py-4">
+                  <div className="fs-3 mb-2">🛒</div>
+                  <p className="text-muted small">Cart is empty</p>
+                </div>
+              ) : (
+                cart.map((item) => (
+                  <div key={item.id} className="d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                    <div className="flex-grow-1">
+                      <h6 className="mb-0 small">{item.name}</h6>
+                      <small className="text-success fw-bold">${parseFloat(item.price).toFixed(2)}</small>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <button 
+                        className="btn btn-outline-danger btn-sm me-2"
+                        onClick={() => removeFromCart(item.id)}
+                      >
+                        -
+                      </button>
+                      <span className="fw-bold mx-2">{item.quantity}</span>
+                      <button 
+                        className="btn btn-outline-success btn-sm"
+                        onClick={() => addToCart(item)}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
-          </div>
-          <div className="card-modern-body">
 
-            {cart.length === 0 ? (
-              <div className="text-center py-8">
-                <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>🛒</div>
-                <p className="text-muted-modern">Cart is empty</p>
-                <p className="text-muted-modern text-small-modern">Add items from the menu</p>
+            {/* Special Instructions */}
+            {cart.length > 0 && (
+              <div className="mb-4">
+                <textarea
+                  className="form-control"
+                  placeholder="Special instructions (optional)"
+                  rows="2"
+                  value={specialInstructions}
+                  onChange={(e) => setSpecialInstructions(e.target.value)}
+                />
               </div>
-            ) : (
+            )}
+
+            {/* Total & Actions */}
+            {cart.length > 0 && (
               <>
-                {/* Cart Items */}
-                <div className="ipad-scroll mb-6">
-                  {cart.map((item) => (
-                    <div key={item.id} className="d-flex justify-content-between align-items-center mb-4 p-4" style={{ backgroundColor: 'var(--color-gray-50)', borderRadius: 'var(--radius-lg)' }}>
-                      <div className="flex-grow-1">
-                        <h4 className="fw-semibold mb-1" style={{ color: 'var(--color-gray-800)' }}>{item.name}</h4>
-                        <div className="text-muted-modern text-small-modern">${item.price.toFixed(2)} each</div>
-                      </div>
-                      <div className="d-flex align-items-center gap-3">
-                        <button
-                          className="btn-modern btn-secondary-modern clickable-modern"
-                          onClick={() => removeFromCart(item.id)}
-                          style={{ minWidth: '40px', height: '40px', padding: '0' }}
-                        >
-                          −
-                        </button>
-                        <span className="fw-bold" style={{ minWidth: '24px', textAlign: 'center', color: 'var(--color-gray-800)' }}>{item.quantity}</span>
-                        <button
-                          className="btn-modern btn-primary-modern clickable-modern"
-                          onClick={() => addToCart(item)}
-                          style={{ minWidth: '40px', height: '40px', padding: '0' }}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <div className="text-end ms-4" style={{ minWidth: '80px' }}>
-                        <div className="fw-bold" style={{ color: 'var(--color-gray-800)', fontSize: 'var(--text-lg)' }}>${(item.price * item.quantity).toFixed(2)}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Order Total */}
-                <div style={{ borderTop: '1px solid var(--color-gray-200)', paddingTop: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <span style={{ color: 'var(--color-gray-600)' }}>Items ({getCartItemCount()}):</span>
-                    <span style={{ color: 'var(--color-gray-800)' }}>${getCartTotal().toFixed(2)}</span>
-                  </div>
+                <div className="border-top pt-3 mb-3">
                   <div className="d-flex justify-content-between align-items-center">
-                    <span className="fw-bold" style={{ fontSize: 'var(--text-lg)', color: 'var(--color-gray-800)' }}>Total:</span>
-                    <span className="fw-bold" style={{ fontSize: 'var(--text-2xl)', color: 'var(--color-success)' }}>${getCartTotal().toFixed(2)}</span>
+                    <h5 className="mb-0">Total:</h5>
+                    <h5 className="mb-0 text-success fw-bold">${getTotalAmount().toFixed(2)}</h5>
                   </div>
                 </div>
 
-                {/* Create Order Button */}
-                <button
-                  className="btn-modern btn-success-modern btn-lg-modern w-100 fw-bold"
-                  onClick={handleCreateOrder}
-                  disabled={loading || !customerPhone.trim()}
-                  style={{ padding: 'var(--space-4) var(--space-6)' }}
-                >
-                  {loading ? (
-                    <>
-                      <span className="loading-spinner-modern me-2" />
-                      Creating Order...
-                    </>
-                  ) : (
-                    <>
-                      💳 Create Cash Order • ${getCartTotal().toFixed(2)}
-                    </>
-                  )}
-                </button>
+                <div className="d-grid gap-2">
+                  <button 
+                    className="btn btn-success btn-lg"
+                    onClick={createOrder}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        Processing...
+                      </>
+                    ) : (
+                      <>💳 Create Order</>
+                    )}
+                  </button>
+                  <button 
+                    className="btn btn-outline-secondary"
+                    onClick={clearCart}
+                  >
+                    🗑️ Clear Cart
+                  </button>
+                </div>
 
-                <div className="text-center mt-3">
-                  <div className="text-muted-modern text-small-modern">
-                    💡 Cash payment collected at counter
-                  </div>
+                {/* Cash Drawer Status */}
+                <div className="mt-3 text-center">
+                  <small className={`text-${drawerStatus.isConnected ? 'success' : 'muted'}`}>
+                    💰 Cash Drawer: {drawerStatus.isConnected ? 'Connected' : 'Disconnected'}
+                  </small>
                 </div>
               </>
             )}

@@ -8,8 +8,56 @@ export default function VendorSignup() {
   const [businessName, setBusinessName] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [language, setLanguage] = useState('es'); // Default to Spanish
   const navigate = useNavigate();
   const [slug, setSlug] = useState("");
+
+  const translations = {
+    es: {
+      title: "Comienza Tu Viaje de Food Truck",
+      subtitle: "Únete a más de 500 propietarios exitosos de food trucks",
+      businessName: "Nombre del Negocio",
+      businessNamePlaceholder: "ej. Tacos de María",
+      businessUrl: "URL del Negocio",
+      businessUrlHelper: "Esta será tu URL única de menú para los clientes",
+      emailLabel: "Dirección de Email",
+      emailPlaceholder: "tu@email.com",
+      passwordLabel: "Contraseña",
+      passwordPlaceholder: "Crea una contraseña segura",
+      passwordHelper: "Debe tener al menos 6 caracteres",
+      creatingAccount: "Creando Tu Cuenta...",
+      startTrial: "🎯 Comenzar Prueba Gratis",
+      alreadyAccount: "¿Ya tienes cuenta?",
+      signIn: "Iniciar Sesión",
+      trial14Days: "Prueba 14 días",
+      noCreditCard: "Sin tarjeta",
+      cancelAnytime: "Cancela cuando quieras",
+      signupSuccess: "¡Registro exitoso! Por favor revisa tu email para confirmar."
+    },
+    en: {
+      title: "Start Your Food Truck Journey",
+      subtitle: "Join 500+ successful food truck owners",
+      businessName: "Business Name",
+      businessNamePlaceholder: "e.g. Maria's Tacos",
+      businessUrl: "Business URL Slug",
+      businessUrlHelper: "This will be your unique menu URL for customers",
+      emailLabel: "Email Address",
+      emailPlaceholder: "your@email.com",
+      passwordLabel: "Password",
+      passwordPlaceholder: "Create a strong password",
+      passwordHelper: "Must be at least 6 characters",
+      creatingAccount: "Creating Your Account...",
+      startTrial: "🎯 Start Free Trial",
+      alreadyAccount: "Already have an account?",
+      signIn: "Sign In",
+      trial14Days: "14-day trial",
+      noCreditCard: "No credit card",
+      cancelAnytime: "Cancel anytime",
+      signupSuccess: "Signup successful! Please check your email to confirm."
+    }
+  };
+
+  const t = translations[language];
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -44,7 +92,7 @@ export default function VendorSignup() {
       return;
     }
 
-    alert("Signup successful! Please check your email to confirm.");
+    alert(t.signupSuccess);
     navigate("/vendor-login");
     setLoading(false);
   };
@@ -52,6 +100,17 @@ export default function VendorSignup() {
   return (
     <div className="min-vh-100 d-flex align-items-center" 
          style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      {/* Language Toggle */}
+      <div className="position-fixed top-0 end-0 p-3" style={{ zIndex: 1000 }}>
+        <button
+          onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
+          className="btn btn-light btn-sm shadow-sm"
+          style={{ borderRadius: '50%', width: '50px', height: '50px' }}
+        >
+          <span style={{ fontSize: '20px' }}>{language === 'es' ? '🇺🇸' : '🇵🇷'}</span>
+        </button>
+      </div>
+      
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-6 col-xl-5">
@@ -66,18 +125,18 @@ export default function VendorSignup() {
                        }}>
                     <span className="text-white fs-1">🚀</span>
                   </div>
-                  <h2 className="fw-bold text-dark mb-2">Start Your Food Truck Journey</h2>
-                  <p className="text-muted">Join 500+ successful food truck owners</p>
+                  <h2 className="fw-bold text-dark mb-2">{t.title}</h2>
+                  <p className="text-muted">{t.subtitle}</p>
                 </div>
 
                 <form onSubmit={handleSignup}>
                   <div className="mb-4">
-                    <label className="form-label fw-semibold text-dark">Business Name</label>
+                    <label className="form-label fw-semibold text-dark">{t.businessName}</label>
                     <input
                       type="text"
                       className="form-control form-control-lg"
                       style={{ borderRadius: '12px', border: '2px solid #e9ecef' }}
-                      placeholder="e.g. Maria's Tacos"
+                      placeholder={t.businessNamePlaceholder}
                       value={businessName}
                       onChange={(e) => setBusinessName(e.target.value)}
                       required
@@ -85,7 +144,7 @@ export default function VendorSignup() {
                   </div>
 
                   <div className="mb-4">
-                    <label className="form-label fw-semibold text-dark">Business URL Slug</label>
+                    <label className="form-label fw-semibold text-dark">{t.businessUrl}</label>
                     <div className="input-group">
                       <span className="input-group-text bg-light text-muted" style={{ borderRadius: '12px 0 0 12px' }}>
                         yoursite.com/menu/
@@ -103,17 +162,17 @@ export default function VendorSignup() {
                       />
                     </div>
                     <div className="form-text">
-                      <small className="text-muted">This will be your unique menu URL for customers</small>
+                      <small className="text-muted">{t.businessUrlHelper}</small>
                     </div>
                   </div>
 
                   <div className="mb-4">
-                    <label className="form-label fw-semibold text-dark">Email Address</label>
+                    <label className="form-label fw-semibold text-dark">{t.emailLabel}</label>
                     <input
                       type="email"
                       className="form-control form-control-lg"
                       style={{ borderRadius: '12px', border: '2px solid #e9ecef' }}
-                      placeholder="your@email.com"
+                      placeholder={t.emailPlaceholder}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -121,18 +180,18 @@ export default function VendorSignup() {
                   </div>
 
                   <div className="mb-4">
-                    <label className="form-label fw-semibold text-dark">Password</label>
+                    <label className="form-label fw-semibold text-dark">{t.passwordLabel}</label>
                     <input
                       type="password"
                       className="form-control form-control-lg"
                       style={{ borderRadius: '12px', border: '2px solid #e9ecef' }}
-                      placeholder="Create a strong password"
+                      placeholder={t.passwordPlaceholder}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
                     <div className="form-text">
-                      <small className="text-muted">Must be at least 6 characters</small>
+                      <small className="text-muted">{t.passwordHelper}</small>
                     </div>
                   </div>
 
@@ -152,20 +211,20 @@ export default function VendorSignup() {
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" />
-                        Creating Your Account...
+                        {t.creatingAccount}
                       </>
                     ) : (
                       <>
-                        🎯 Start Free Trial
+                        {t.startTrial}
                       </>
                     )}
                   </button>
 
                   <div className="text-center">
                     <small className="text-muted">
-                      Already have an account? 
+                      {t.alreadyAccount}
                       <a href="/vendor-login" className="text-primary fw-semibold text-decoration-none ms-1">
-                        Sign In
+                        {t.signIn}
                       </a>
                     </small>
                   </div>
@@ -177,15 +236,15 @@ export default function VendorSignup() {
                   <div className="row text-center">
                     <div className="col-4">
                       <div className="text-primary fw-bold">✅</div>
-                      <div className="small text-muted">14-day trial</div>
+                      <div className="small text-muted">{t.trial14Days}</div>
                     </div>
                     <div className="col-4">
                       <div className="text-success fw-bold">✅</div>
-                      <div className="small text-muted">No credit card</div>
+                      <div className="small text-muted">{t.noCreditCard}</div>
                     </div>
                     <div className="col-4">
                       <div className="text-warning fw-bold">✅</div>
-                      <div className="small text-muted">Cancel anytime</div>
+                      <div className="small text-muted">{t.cancelAnytime}</div>
                     </div>
                   </div>
                 </div>

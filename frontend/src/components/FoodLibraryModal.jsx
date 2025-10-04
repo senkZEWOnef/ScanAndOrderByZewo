@@ -53,15 +53,24 @@ export default function FoodLibraryModal({
                         }}
                         onClick={() => setSelectedCuisine(type)}
                       >
-                        <div className="text-center p-2">
-                          <div className="fs-3 mb-2">
+                        <div className="text-center p-3">
+                          <div className="fs-2 mb-2">
                             {type === 'mexican' && '🌮'}
                             {type === 'american' && '🍔'}
                             {type === 'asian' && '🍜'}
                             {type === 'pizza' && '🍕'}
                             {type === 'dessert' && '🍰'}
                           </div>
-                          <div className="small fw-semibold">{name.split(' ')[0]}</div>
+                          <div style={{ 
+                            fontSize: '14px', 
+                            fontWeight: 'bold',
+                            color: selectedCuisine === type ? '#ffffff' : '#000000',
+                            textShadow: selectedCuisine === type ? '1px 1px 2px rgba(0,0,0,0.5)' : '1px 1px 2px rgba(255,255,255,0.8)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                            {name.replace(/^[^\w\s]+\s*/, '').split(' ')[0]}
+                          </div>
                         </div>
                       </button>
                     </div>
