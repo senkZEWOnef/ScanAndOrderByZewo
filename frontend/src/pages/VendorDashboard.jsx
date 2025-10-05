@@ -148,6 +148,7 @@ export default function VendorDashboard() {
 
   const fetchMenuItems = async (userId) => {
     try {
+      console.log('📋 Fetching menu items for vendor:', userId);
       const { data, error } = await supabase
         .from('menu_items')
         .select('*')
@@ -155,6 +156,8 @@ export default function VendorDashboard() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      console.log('📋 Fetched menu items:', data);
+      console.log('📋 Menu items count:', data?.length || 0);
       setMenuItems(data || []);
     } catch (error) {
       console.error('Error fetching menu items:', error);
@@ -242,92 +245,207 @@ export default function VendorDashboard() {
   }
 
   return (
-    <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
-      {/* Language Toggle */}
-      <div className="position-fixed top-0 end-0 p-3" style={{ zIndex: 1000 }}>
-        <button
-          onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
-          className="btn btn-light btn-sm shadow-sm"
-          style={{ borderRadius: '50%', width: '50px', height: '50px' }}
-        >
-          <span style={{ fontSize: '20px' }}>{language === 'es' ? '🇺🇸' : '🇵🇷'}</span>
-        </button>
-      </div>
-
-      {/* Header */}
-      <nav className="navbar navbar-expand-lg navbar-dark shadow-sm" 
-           style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-        <div className="container-fluid px-4">
-          <span className="navbar-brand fw-bold fs-4">
-            Escanea <span className="text-warning">PR</span>
-          </span>
-          
+    <div className="d-flex min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
+      {/* Sidebar */}
+      <div className="bg-white shadow-lg" style={{ width: '280px', minHeight: '100vh' }}>
+        {/* Logo/Brand */}
+        <div className="p-4 border-bottom">
           <div className="d-flex align-items-center">
-            <span className="text-white me-3">
-              {t.welcome} {vendorProfile?.business_name || user?.email}
-            </span>
-            <button 
-              className="btn btn-outline-light btn-sm"
-              onClick={handleLogout}
+            <div 
+              className="rounded-circle me-3 d-flex align-items-center justify-content-center"
+              style={{ 
+                width: '45px', 
+                height: '45px', 
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+              }}
             >
-              {t.logout}
+              <span className="text-white fw-bold">EP</span>
+            </div>
+            <div>
+              <h5 className="mb-0 fw-bold">Escanea <span style={{ color: '#667eea' }}>PR</span></h5>
+              <small className="text-muted">{vendorProfile?.business_name || 'Dashboard'}</small>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <div className="p-3">
+          <nav>
+            <div className="nav flex-column">
+              <button 
+                className={`nav-link border-0 text-start p-3 mb-2 rounded ${activeTab === 'dashboard' ? 'bg-primary text-white' : 'text-dark'}`}
+                onClick={() => setActiveTab('dashboard')}
+                style={{ transition: 'all 0.2s' }}
+              >
+                <i className="me-3">📊</i>
+                {t.dashboard}
+              </button>
+              
+              <button 
+                className={`nav-link border-0 text-start p-3 mb-2 rounded ${activeTab === 'menu' ? 'bg-primary text-white' : 'text-dark'}`}
+                onClick={() => setActiveTab('menu')}
+                style={{ transition: 'all 0.2s' }}
+              >
+                <i className="me-3">🍽️</i>
+                {t.menu}
+              </button>
+              
+              <button 
+                className={`nav-link border-0 text-start p-3 mb-2 rounded ${activeTab === 'orders' ? 'bg-primary text-white' : 'text-dark'}`}
+                onClick={() => setActiveTab('orders')}
+                style={{ transition: 'all 0.2s' }}
+              >
+                <i className="me-3">📋</i>
+                {t.orders}
+              </button>
+              
+              <button 
+                className={`nav-link border-0 text-start p-3 mb-2 rounded ${activeTab === 'analytics' ? 'bg-primary text-white' : 'text-dark'}`}
+                onClick={() => setActiveTab('analytics')}
+                style={{ transition: 'all 0.2s' }}
+              >
+                <i className="me-3">📈</i>
+                {t.analytics}
+              </button>
+              
+              <button 
+                className={`nav-link border-0 text-start p-3 mb-2 rounded ${activeTab === 'cashier' ? 'bg-primary text-white' : 'text-dark'}`}
+                onClick={() => setActiveTab('cashier')}
+                style={{ transition: 'all 0.2s' }}
+              >
+                <i className="me-3">💰</i>
+                {t.cashier}
+              </button>
+
+              <hr className="my-3" />
+
+              <button 
+                className="nav-link border-0 text-start p-3 mb-2 rounded text-dark"
+                onClick={() => navigate('/vendor-dashboard/customize')}
+                style={{ transition: 'all 0.2s' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              >
+                <i className="me-3">🎨</i>
+                Customize Restaurant
+              </button>
+            </div>
+          </nav>
+        </div>
+
+        {/* QR Code Section */}
+        <div className="p-3 border-top mt-auto">
+          <div className="card border-0" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+            <div className="card-body p-3 text-white text-center">
+              <div className="mb-2">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(`${window.location.origin}/menu/${vendorProfile?.slug || user?.id}`)}`}
+                  alt="QR Code"
+                  className="rounded bg-white p-1"
+                  style={{ width: '60px', height: '60px' }}
+                />
+              </div>
+              <small className="d-block mb-2 opacity-75">Customer Menu QR</small>
+              <div className="d-flex gap-1">
+                <button 
+                  className="btn btn-light btn-sm flex-fill"
+                  style={{ fontSize: '10px' }}
+                  onClick={() => window.open(`${window.location.origin}/menu/${vendorProfile?.slug || user?.id}`, '_blank')}
+                >
+                  View
+                </button>
+                <button 
+                  className="btn btn-outline-light btn-sm flex-fill"
+                  style={{ fontSize: '10px' }}
+                  onClick={() => {
+                    const menuUrl = `${window.location.origin}/menu/${vendorProfile?.slug || user?.id}`;
+                    navigator.clipboard.writeText(menuUrl);
+                    alert(language === 'es' ? '¡Enlace copiado!' : 'Link copied!');
+                  }}
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* User Info & Logout */}
+        <div className="p-3 border-top">
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="d-flex align-items-center">
+              <div 
+                className="rounded-circle me-2 d-flex align-items-center justify-content-center bg-secondary"
+                style={{ width: '32px', height: '32px' }}
+              >
+                <span className="text-white" style={{ fontSize: '12px' }}>👤</span>
+              </div>
+              <div>
+                <small className="fw-semibold d-block" style={{ fontSize: '11px' }}>
+                  {vendorProfile?.business_name || user?.email}
+                </small>
+                <small className="text-muted" style={{ fontSize: '10px' }}>
+                  {user?.email}
+                </small>
+              </div>
+            </div>
+            <button 
+              className="btn btn-outline-secondary btn-sm"
+              onClick={handleLogout}
+              style={{ fontSize: '10px', padding: '4px 8px' }}
+            >
+              Logout
             </button>
           </div>
         </div>
-      </nav>
 
-      {/* Navigation Tabs */}
-      <div className="container-fluid px-4 py-3">
-        <ul className="nav nav-pills nav-fill">
-          <li className="nav-item">
-            <button 
-              className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              📊 {t.dashboard}
-            </button>
-          </li>
-          <li className="nav-item">
-            <button 
-              className={`nav-link ${activeTab === 'menu' ? 'active' : ''}`}
-              onClick={() => setActiveTab('menu')}
-            >
-              🍽️ {t.menu}
-            </button>
-          </li>
-          <li className="nav-item">
-            <button 
-              className={`nav-link ${activeTab === 'orders' ? 'active' : ''}`}
-              onClick={() => setActiveTab('orders')}
-            >
-              📋 {t.orders}
-            </button>
-          </li>
-          <li className="nav-item">
-            <button 
-              className={`nav-link ${activeTab === 'analytics' ? 'active' : ''}`}
-              onClick={() => setActiveTab('analytics')}
-            >
-              📈 {t.analytics}
-            </button>
-          </li>
-          <li className="nav-item">
-            <button 
-              className={`nav-link ${activeTab === 'cashier' ? 'active' : ''}`}
-              onClick={() => setActiveTab('cashier')}
-            >
-              💰 {t.cashier}
-            </button>
-          </li>
-        </ul>
+        {/* Language Toggle */}
+        <div className="p-3 pt-0">
+          <button
+            onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
+            className="btn btn-light btn-sm w-100"
+            style={{ fontSize: '12px' }}
+          >
+            <span style={{ fontSize: '16px' }}>{language === 'es' ? '🇺🇸' : '🇵🇷'}</span>
+            <span className="ms-2">{language === 'es' ? 'English' : 'Español'}</span>
+          </button>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="container-fluid px-4 pb-5">
+      {/* Main Content Area */}
+      <div className="flex-fill">
+        {/* Top Header */}
+        <div className="bg-white shadow-sm p-4 border-bottom">
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 className="mb-1 fw-bold">
+                {activeTab === 'dashboard' && t.dashboard}
+                {activeTab === 'menu' && t.menu}
+                {activeTab === 'orders' && t.orders}
+                {activeTab === 'analytics' && t.analytics}
+                {activeTab === 'cashier' && t.cashier}
+              </h4>
+              <p className="text-muted mb-0" style={{ fontSize: '14px' }}>
+                {t.welcome} {vendorProfile?.business_name || user?.email}
+              </p>
+            </div>
+            <div className="text-end">
+              <small className="text-muted d-block">
+                {new Date().toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </small>
+            </div>
+          </div>
+        </div>
+
+        {/* Page Content */}
+        <div className="p-4">
         {activeTab === 'dashboard' && (
           <div>
-            <h2 className="mb-4">{t.dashboard}</h2>
-            
             {/* Stats Cards */}
             <div className="row g-4 mb-5">
               <div className="col-lg-3 col-md-6">
@@ -371,92 +489,6 @@ export default function VendorDashboard() {
               </div>
             </div>
 
-            {/* QR Code Section */}
-            <div className="row mb-4">
-              <div className="col-12">
-                <div className="card border-0 shadow-sm" style={{ borderRadius: '15px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                  <div className="card-body p-4 text-white">
-                    <div className="row align-items-center">
-                      <div className="col-md-8">
-                        <h5 className="card-title text-white mb-2">📱 Customer QR Code</h5>
-                        <p className="mb-3 opacity-75">
-                          {language === 'es' 
-                            ? 'Los clientes escanean este código QR para ver tu menú, hacer pedidos y pagar con Stripe o ATH Móvil'
-                            : 'Customers scan this QR code to view your menu, place orders, and pay with Stripe or ATH Móvil'
-                          }
-                        </p>
-                        <div className="d-flex gap-2 flex-wrap">
-                          <button 
-                            className="btn btn-light btn-sm"
-                            onClick={() => window.open(`${window.location.origin}/menu/${vendorProfile?.slug || user?.id}`, '_blank')}
-                          >
-                            🔗 {language === 'es' ? 'Ver Menú' : 'View Menu'}
-                          </button>
-                          <button 
-                            className="btn btn-outline-light btn-sm"
-                            onClick={() => {
-                              const menuUrl = `${window.location.origin}/menu/${vendorProfile?.slug || user?.id}`;
-                              navigator.clipboard.writeText(menuUrl);
-                              alert(language === 'es' ? '¡Enlace copiado!' : 'Link copied!');
-                            }}
-                          >
-                            📋 {language === 'es' ? 'Copiar Enlace' : 'Copy Link'}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="col-md-4 text-center">
-                        <div className="bg-white p-3 rounded-3 d-inline-block">
-                          <div id="qr-code" style={{ width: '150px', height: '150px' }}>
-                            <img 
-                              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${window.location.origin}/menu/${vendorProfile?.slug || user?.id}`)}`}
-                              alt="QR Code"
-                              className="w-100 h-100"
-                              style={{ borderRadius: '8px' }}
-                            />
-                          </div>
-                        </div>
-                        <div className="mt-2">
-                          <small className="text-white opacity-75">
-                            {language === 'es' ? 'Imprime o muestra este código QR' : 'Print or display this QR code'}
-                          </small>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="row">
-              <div className="col-12">
-                <div className="card border-0 shadow-sm" style={{ borderRadius: '15px' }}>
-                  <div className="card-body p-4">
-                    <h5 className="card-title mb-3">Quick Actions</h5>
-                    <div className="d-flex gap-3 flex-wrap">
-                      <button 
-                        className="btn btn-primary"
-                        onClick={() => setActiveTab('menu')}
-                      >
-                        {t.addNewItem}
-                      </button>
-                      <button 
-                        className="btn btn-outline-primary"
-                        onClick={() => setActiveTab('orders')}
-                      >
-                        View {t.orders}
-                      </button>
-                      <button 
-                        className="btn btn-outline-secondary"
-                        onClick={() => setActiveTab('analytics')}
-                      >
-                        View {t.analytics}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
@@ -477,7 +509,11 @@ export default function VendorDashboard() {
               </div>
             </div>
 
-            {menuItems.length === 0 ? (
+            {(() => {
+              console.log('🍽️ Menu items in render:', menuItems);
+              console.log('🍽️ Menu items length:', menuItems.length);
+              return menuItems.length === 0;
+            })() ? (
               <div className="text-center py-5">
                 <div className="card border-0 shadow-sm" style={{ borderRadius: '20px' }}>
                   <div className="card-body p-5">
@@ -515,10 +551,10 @@ export default function VendorDashboard() {
                       
                       <div className="row g-4">
                         {categoryItems.map((item) => (
-                          <div key={item.id} className="col-lg-4 col-md-6">
+                          <div key={item.id} className="col-lg-3 col-md-4 col-sm-6">
                             <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                               {item.image_url && (
-                                <div style={{ height: '200px', overflow: 'hidden', borderRadius: '15px 15px 0 0' }}>
+                                <div style={{ height: '140px', overflow: 'hidden', borderRadius: '15px 15px 0 0' }}>
                                   <img
                                     src={item.image_url}
                                     alt={item.name}
@@ -568,10 +604,10 @@ export default function VendorDashboard() {
                     
                     <div className="row g-4">
                       {menuItems.filter(item => !item.category || item.category === '').map((item) => (
-                        <div key={item.id} className="col-lg-4 col-md-6">
+                        <div key={item.id} className="col-lg-3 col-md-4 col-sm-6">
                           <div className="card border-0 shadow-sm h-100" style={{ borderRadius: '15px' }}>
                             {item.image_url && (
-                              <div style={{ height: '200px', overflow: 'hidden', borderRadius: '15px 15px 0 0' }}>
+                              <div style={{ height: '140px', overflow: 'hidden', borderRadius: '15px 15px 0 0' }}>
                                 <img
                                   src={item.image_url}
                                   alt={item.name}
@@ -619,6 +655,7 @@ export default function VendorDashboard() {
         {activeTab === 'cashier' && (
           <CashierOrder user={user} onOrderCreated={() => fetchMenuItems(user.id)} />
         )}
+        </div>
       </div>
 
       {/* Food Library Modal */}

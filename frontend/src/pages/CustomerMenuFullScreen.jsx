@@ -5,7 +5,7 @@ import CartModal from "../components/CartModal";
 import PaymentModal from "../components/PaymentModal";
 import PaymentSelectionModal from "../components/PaymentSelectionModal";
 
-export default function CustomerMenu() {
+export default function CustomerMenuFullScreen() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [vendor, setVendor] = useState(null);
@@ -368,32 +368,36 @@ export default function CustomerMenu() {
 
   if (loading) {
     return (
-      <div className="container mt-5 text-center">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="text-muted">Loading menu...</p>
         </div>
-        <p className="mt-3">Loading menu...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container mt-5">
-        <div className="alert alert-danger text-center">
-          <h4>Oops! {error}</h4>
-          <p>Please check the QR code or contact the food truck directly.</p>
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="text-center">
+          <div className="alert alert-danger">
+            <h4>Oops! {error}</h4>
+            <p>Please check the QR code or contact the food truck directly.</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
-      {/* DoorDash-Style Header */}
+    <div className="min-vh-100" style={{ backgroundColor: vendor?.background_color || '#f8f9fa' }}>
+      {/* Full-Width Header */}
       <div className="position-relative">
         {/* Banner Image */}
-        <div className="position-relative" style={{ height: '200px', overflow: 'hidden' }}>
+        <div className="position-relative" style={{ height: '240px', overflow: 'hidden' }}>
           {vendor?.banner_url ? (
             <img
               src={vendor.banner_url}
@@ -434,91 +438,97 @@ export default function CustomerMenu() {
         </div>
         
         {/* Restaurant Info Card */}
-        <div className="container" style={{ maxWidth: '640px' }}>
-          <div className="position-relative" style={{ marginTop: '-60px' }}>
-            <div className="bg-white rounded-4 shadow-lg p-4 mx-3">
-              <div className="d-flex align-items-start gap-3">
-                {/* Profile Picture */}
-                <div className="flex-shrink-0">
+        <div className="container-fluid" style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          <div className="position-relative" style={{ marginTop: '-80px' }}>
+            <div className="rounded-4 shadow-lg p-4 mx-3" style={{ backgroundColor: vendor?.header_color || '#ffffff' }}>
+              <div className="row">
+                <div className="col-auto">
+                  {/* Profile Picture */}
                   {vendor?.logo_url ? (
                     <img
                       src={vendor.logo_url}
                       alt={`${vendor.business_name} Logo`}
                       style={{
-                        width: '80px',
-                        height: '80px',
+                        width: '100px',
+                        height: '100px',
                         objectFit: 'cover',
-                        borderRadius: '16px',
-                        border: '4px solid white',
+                        borderRadius: '20px',
+                        border: `4px solid ${vendor?.header_color || '#ffffff'}`,
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                       }}
                     />
                   ) : (
                     <div
                       style={{
-                        width: '80px',
-                        height: '80px',
+                        width: '100px',
+                        height: '100px',
                         backgroundColor: '#007bff',
-                        borderRadius: '16px',
-                        border: '4px solid white',
+                        borderRadius: '20px',
+                        border: `4px solid ${vendor?.header_color || '#ffffff'}`,
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
                       }}
                     >
-                      <span style={{ color: 'white', fontSize: '2rem' }}>🍽️</span>
+                      <span style={{ color: 'white', fontSize: '2.5rem' }}>🍽️</span>
                     </div>
                   )}
                 </div>
                 
-                {/* Restaurant Details */}
-                <div className="flex-grow-1">
-                  <h1 className="h3 fw-bold mb-2" style={{ color: '#1a1a1a' }}>
-                    {vendor?.business_name}
-                  </h1>
-                  
-                  {vendor?.description && (
-                    <p className="text-muted mb-3" style={{ fontSize: '14px', lineHeight: '1.4' }}>
-                      {vendor.description}
-                    </p>
-                  )}
-                  
-                  {/* Info Tags */}
-                  <div className="d-flex flex-wrap gap-2 mb-3">
-                    <span className="badge" style={{ backgroundColor: '#28a745', color: 'white', padding: '4px 8px', fontSize: '12px' }}>
-                      ⚡ 15-20 min
-                    </span>
-                    <span className="badge" style={{ backgroundColor: '#17a2b8', color: 'white', padding: '4px 8px', fontSize: '12px' }}>
-                      🚀 QR Ordering
-                    </span>
-                    {vendor?.cuisine_type && (
-                      <span className="badge" style={{ backgroundColor: '#6c757d', color: 'white', padding: '4px 8px', fontSize: '12px' }}>
-                        {vendor.cuisine_type === 'mexican' && '🌮 Mexican'}
-                        {vendor.cuisine_type === 'american' && '🍔 American'}
-                        {vendor.cuisine_type === 'italian' && '🍝 Italian'}
-                        {vendor.cuisine_type === 'asian' && '🍜 Asian'}
-                        {vendor.cuisine_type === 'jamaican' && '🏝️ Jamaican'}
-                        {vendor.cuisine_type === 'haitian' && '🇭🇹 Haitian'}
-                        {vendor.cuisine_type === 'puerto_rican' && '🇵🇷 Puerto Rican'}
-                        {vendor.cuisine_type === 'indian' && '🍛 Indian'}
-                        {vendor.cuisine_type === 'greek' && '🫒 Greek'}
-                        {vendor.cuisine_type === 'middle_eastern' && '🥙 Middle Eastern'}
-                        {vendor.cuisine_type === 'soul_food' && '🍗 Soul Food'}
-                        {vendor.cuisine_type === 'desserts' && '🍰 Desserts'}
-                      </span>
-                    )}
-                  </div>
-                  
-                  {/* Rating & Reviews (placeholder) */}
-                  <div className="d-flex align-items-center gap-2 text-muted" style={{ fontSize: '14px' }}>
-                    <div className="d-flex align-items-center gap-1">
-                      <span style={{ color: '#ffc107' }}>⭐</span>
-                      <span className="fw-semibold">4.8</span>
-                      <span>(120+ reviews)</span>
+                <div className="col">
+                  {/* Restaurant Details */}
+                  <div className="row">
+                    <div className="col-lg-8">
+                      <h1 className="h2 fw-bold mb-2" style={{ color: '#1a1a1a' }}>
+                        {vendor?.business_name}
+                      </h1>
+                      
+                      {vendor?.description && (
+                        <p className="text-muted mb-3" style={{ fontSize: '15px', lineHeight: '1.5' }}>
+                          {vendor.description}
+                        </p>
+                      )}
+                      
+                      {/* Info Tags */}
+                      <div className="d-flex flex-wrap gap-2 mb-3">
+                        <span className="badge bg-success" style={{ padding: '6px 12px', fontSize: '13px' }}>
+                          ⚡ 15-20 min
+                        </span>
+                        <span className="badge bg-info" style={{ padding: '6px 12px', fontSize: '13px' }}>
+                          🚀 QR Ordering
+                        </span>
+                        {vendor?.cuisine_type && (
+                          <span className="badge bg-secondary" style={{ padding: '6px 12px', fontSize: '13px' }}>
+                            {vendor.cuisine_type === 'mexican' && '🌮 Mexican'}
+                            {vendor.cuisine_type === 'american' && '🍔 American'}
+                            {vendor.cuisine_type === 'italian' && '🍝 Italian'}
+                            {vendor.cuisine_type === 'asian' && '🍜 Asian'}
+                            {vendor.cuisine_type === 'jamaican' && '🏝️ Jamaican'}
+                            {vendor.cuisine_type === 'haitian' && '🇭🇹 Haitian'}
+                            {vendor.cuisine_type === 'puerto_rican' && '🇵🇷 Puerto Rican'}
+                            {vendor.cuisine_type === 'indian' && '🍛 Indian'}
+                            {vendor.cuisine_type === 'greek' && '🫒 Greek'}
+                            {vendor.cuisine_type === 'middle_eastern' && '🥙 Middle Eastern'}
+                            {vendor.cuisine_type === 'soul_food' && '🍗 Soul Food'}
+                            {vendor.cuisine_type === 'desserts' && '🍰 Desserts'}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* Rating & Reviews (placeholder) */}
+                      <div className="d-flex align-items-center gap-3 text-muted" style={{ fontSize: '14px' }}>
+                        <div className="d-flex align-items-center gap-1">
+                          <span style={{ color: '#ffc107' }}>⭐</span>
+                          <span className="fw-semibold">4.8</span>
+                          <span>(120+ reviews)</span>
+                        </div>
+                        <span>•</span>
+                        <span>$$</span>
+                        <span>•</span>
+                        <span>Fast Casual</span>
+                      </div>
                     </div>
-                    <span>•</span>
-                    <span>$$</span>
                   </div>
                 </div>
               </div>
@@ -527,222 +537,278 @@ export default function CustomerMenu() {
         </div>
       </div>
 
-      <div className="container" style={{ maxWidth: "640px", paddingTop: '2rem' }}>
-
-        {/* Sticky Category Filters */}
-        <div className="sticky-top bg-white pb-3 sticky-shadow" style={{ top: '0px', zIndex: 1040, marginTop: '-1rem', paddingTop: '1rem' }}>
-          <div className="d-flex gap-2 overflow-auto category-scroll">
-            {[
-              { id: 'all', name: 'All Items', icon: '🍽️' },
-              { id: 'mains', name: 'Mains', icon: '🍔' },
-              { id: 'appetizers', name: 'Appetizers', icon: '🥗' },
-              { id: 'sides', name: 'Sides', icon: '🍟' },
-              { id: 'drinks', name: 'Drinks', icon: '🥤' },
-              { id: 'desserts', name: 'Desserts', icon: '🍰' }
-            ].map(category => {
-              const isActive = selectedCategory === category.id;
-              return (
-                <button
-                  key={category.id}
-                  className={`btn flex-shrink-0 ${isActive ? 'btn-primary' : 'btn-outline-secondary'}`}
-                  style={{
-                    borderRadius: '20px',
-                    padding: '8px 16px',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    border: isActive ? '2px solid #007bff' : '1px solid #dee2e6',
-                    whiteSpace: 'nowrap'
-                  }}
-                  onClick={() => setSelectedCategory(category.id)}
-                >
-                  <span className="me-1">{category.icon}</span>
-                  {category.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Cart Summary (sticky bottom) */}
-        {cart.length > 0 && (
-          <div className="position-fixed bottom-0 start-0 w-100 p-3" style={{ zIndex: 1050 }}>
-            <div className="container" style={{ maxWidth: "640px" }}>
-              <div className="bg-success rounded-4 shadow-lg" style={{ padding: '16px' }}>
-                <div className="d-flex justify-content-between align-items-center">
-                  <div className="text-white">
-                    <div className="fw-bold fs-4">${getCartTotal().toFixed(2)}</div>
-                    <div style={{ fontSize: '14px', opacity: 0.9 }}>
-                      {getCartItemCount()} {getCartItemCount() === 1 ? 'item' : 'items'} in cart
-                    </div>
-                  </div>
-                  <button 
-                    className="btn btn-light fw-bold px-4"
-                    style={{ 
-                      borderRadius: '12px',
-                      color: '#28a745'
-                    }}
-                    onClick={() => setShowCartModal(true)}
-                  >
-                    View Cart 🛒
-                  </button>
+      {/* Main Content */}
+      <div className="container-fluid" style={{ maxWidth: '1400px', margin: '0 auto', paddingTop: '2rem' }}>
+        <div className="row">
+          {/* Desktop Sidebar Filters */}
+          <div className="col-xl-2 col-lg-3 d-none d-lg-block">
+            <div className="sticky-top" style={{ top: '2rem' }}>
+              <div className="bg-white rounded-3 shadow-sm p-4">
+                <h5 className="fw-bold mb-4">Categories</h5>
+                <div className="d-flex flex-column gap-2">
+                  {[
+                    { id: 'all', name: 'All Items', icon: '🍽️' },
+                    { id: 'mains', name: 'Main Dishes', icon: '🍔' },
+                    { id: 'appetizers', name: 'Appetizers', icon: '🥗' },
+                    { id: 'sides', name: 'Sides', icon: '🍟' },
+                    { id: 'drinks', name: 'Beverages', icon: '🥤' },
+                    { id: 'desserts', name: 'Desserts', icon: '🍰' }
+                  ].map(category => {
+                    const isActive = selectedCategory === category.id;
+                    return (
+                      <button
+                        key={category.id}
+                        className={`btn w-100 text-start ${isActive ? 'btn-primary' : 'btn-outline-light'}`}
+                        style={{
+                          borderRadius: '12px',
+                          padding: '12px 16px',
+                          fontSize: '15px',
+                          fontWeight: '500',
+                          border: isActive ? 'none' : '1px solid #e9ecef',
+                          backgroundColor: isActive ? '#007bff' : 'transparent',
+                          color: isActive ? 'white' : '#495057',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onClick={() => setSelectedCategory(category.id)}
+                      >
+                        <span className="me-2">{category.icon}</span>
+                        {category.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
-        )}
-
-        {/* Menu Items */}
-        {menuItems.length === 0 ? (
-          <div className="text-center py-5">
-            <div className="mb-4">
-              <div 
-                className="mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center"
-                style={{ width: '100px', height: '100px' }}
-              >
-                <span style={{ fontSize: '3rem' }}>🍽️</span>
+          
+          {/* Mobile Category Filters */}
+          <div className="col-12 d-lg-none mb-4">
+            <div className="bg-white rounded-3 shadow-sm p-3">
+              <div className="d-flex gap-2 overflow-auto category-scroll">
+                {[
+                  { id: 'all', name: 'All', icon: '🍽️' },
+                  { id: 'mains', name: 'Mains', icon: '🍔' },
+                  { id: 'appetizers', name: 'Apps', icon: '🥗' },
+                  { id: 'sides', name: 'Sides', icon: '🍟' },
+                  { id: 'drinks', name: 'Drinks', icon: '🥤' },
+                  { id: 'desserts', name: 'Desserts', icon: '🍰' }
+                ].map(category => {
+                  const isActive = selectedCategory === category.id;
+                  return (
+                    <button
+                      key={category.id}
+                      className={`btn flex-shrink-0 ${isActive ? 'btn-primary' : 'btn-outline-secondary'}`}
+                      style={{
+                        borderRadius: '20px',
+                        padding: '8px 16px',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        whiteSpace: 'nowrap'
+                      }}
+                      onClick={() => setSelectedCategory(category.id)}
+                    >
+                      <span className="me-1">{category.icon}</span>
+                      {category.name}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            <h3 className="text-muted mb-2">Menu Coming Soon!</h3>
-            <p className="text-muted">Check back later for delicious options</p>
           </div>
-        ) : (
-          (() => {
-            const categories = categorizeMenuItems();
-            const categoriesToShow = selectedCategory === 'all' 
-              ? Object.entries(categories).filter(([_, items]) => items.length > 0)
-              : [[selectedCategory, categories[selectedCategory] || []]];
+          
+          {/* Main Content Area */}
+          <div className="col-xl-10 col-lg-9">
+            {/* Menu Items */}
+            {menuItems.length === 0 ? (
+              <div className="text-center py-5">
+                <div className="mb-4">
+                  <div 
+                    className="mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center"
+                    style={{ width: '120px', height: '120px' }}
+                  >
+                    <span style={{ fontSize: '4rem' }}>🍽️</span>
+                  </div>
+                </div>
+                <h3 className="text-muted mb-2">Menu Coming Soon!</h3>
+                <p className="text-muted">Check back later for delicious options</p>
+              </div>
+            ) : (
+              (() => {
+                const categories = categorizeMenuItems();
+                const categoriesToShow = selectedCategory === 'all' 
+                  ? Object.entries(categories).filter(([_, items]) => items.length > 0)
+                  : [[selectedCategory, categories[selectedCategory] || []]];
 
-            return categoriesToShow.map(([categoryName, categoryItems]) => (
-              categoryItems.length > 0 && (
-                <div key={categoryName} className="mb-4">
-                  {selectedCategory === 'all' && (
-                    <div className="mb-3">
-                      <h4 className="fw-bold h5 mb-2">
-                        {categoryName === 'mains' && '🍔 Main Dishes'}
-                        {categoryName === 'appetizers' && '🥗 Appetizers & Starters'}
-                        {categoryName === 'sides' && '🍟 Sides & Extras'}
-                        {categoryName === 'drinks' && '🥤 Beverages'}
-                        {categoryName === 'desserts' && '🍰 Desserts & Sweets'}
-                        {categoryName === 'other' && '🍽️ Specialties'}
-                      </h4>
-                      <div className="bg-primary" style={{ height: '2px', width: '40px' }}></div>
-                    </div>
-                  )}
-                  
-                  <div className="row g-3">
-                    {categoryItems.map((item) => (
-                      <div key={item.id} className="col-12">
-                        <div 
-                          className="card border-0 shadow-sm h-100" 
-                          style={{ cursor: 'pointer', borderRadius: '12px' }}
-                          onClick={() => handleItemClick(item)}
-                        >
-                          <div className="row g-0">
-                            {/* Image */}
-                            <div className="col-4">
+                return categoriesToShow.map(([categoryName, categoryItems]) => (
+                  categoryItems.length > 0 && (
+                    <div key={categoryName} className="mb-5">
+                      {selectedCategory === 'all' && (
+                        <div className="mb-4">
+                          <h3 className="fw-bold mb-3" style={{ fontSize: '28px' }}>
+                            {categoryName === 'mains' && '🍔 Main Dishes'}
+                            {categoryName === 'appetizers' && '🥗 Appetizers & Starters'}
+                            {categoryName === 'sides' && '🍟 Sides & Extras'}
+                            {categoryName === 'drinks' && '🥤 Beverages'}
+                            {categoryName === 'desserts' && '🍰 Desserts & Sweets'}
+                            {categoryName === 'other' && '🍽️ Specialties'}
+                          </h3>
+                          <div className="bg-primary" style={{ height: '4px', width: '80px', borderRadius: '2px' }}></div>
+                        </div>
+                      )}
+                      
+                      <div className="row g-4">
+                        {categoryItems.map((item) => (
+                          <div key={item.id} className="col-xxl-3 col-xl-4 col-lg-6 col-md-6">
+                            <div 
+                              className="card border-0 shadow-sm h-100" 
+                              style={{ cursor: 'pointer', borderRadius: '16px', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}
+                              onClick={() => handleItemClick(item)}
+                              onMouseEnter={(e) => {
+                                e.target.style.transform = 'translateY(-4px)';
+                                e.target.style.boxShadow = '0 12px 28px rgba(0,0,0,0.15)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.target.style.transform = 'translateY(0)';
+                                e.target.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                              }}
+                            >
+                              {/* Image */}
                               <div className="position-relative">
                                 {item.image_url ? (
                                   <img
                                     src={item.image_url}
                                     alt={item.name}
-                                    className="img-fluid"
+                                    className="card-img-top"
                                     style={{ 
-                                      width: '100%',
-                                      height: '120px', 
+                                      height: '150px', 
                                       objectFit: 'cover',
-                                      borderRadius: '12px 0 0 12px'
+                                      borderRadius: '16px 16px 0 0'
                                     }}
                                   />
                                 ) : (
                                   <div
                                     className="bg-light d-flex align-items-center justify-content-center"
                                     style={{ 
-                                      width: '100%',
-                                      height: '120px',
-                                      borderRadius: '12px 0 0 12px'
+                                      height: '150px',
+                                      borderRadius: '16px 16px 0 0'
                                     }}
                                   >
-                                    <span style={{ fontSize: '2rem' }}>🍽️</span>
+                                    <span style={{ fontSize: '3rem' }}>🍽️</span>
                                   </div>
                                 )}
                                 
                                 {/* Cart Quantity Badge */}
                                 {getCartItemQuantity(item.id) > 0 && (
-                                  <div className="position-absolute top-0 end-0 m-2">
+                                  <div className="position-absolute top-0 end-0 m-3">
                                     <span 
                                       className="badge bg-success rounded-circle d-flex align-items-center justify-content-center"
-                                      style={{ width: '24px', height: '24px', fontSize: '12px' }}
+                                      style={{ width: '32px', height: '32px', fontSize: '14px', fontWeight: 'bold' }}
                                     >
                                       {getCartItemQuantity(item.id)}
                                     </span>
                                   </div>
                                 )}
                               </div>
-                            </div>
-                            
-                            {/* Content */}
-                            <div className="col-8">
-                              <div className="card-body p-3 d-flex flex-column h-100">
+                              
+                              {/* Content */}
+                              <div className="card-body p-4 d-flex flex-column">
                                 <div className="flex-grow-1">
-                                  <h5 className="card-title fw-bold mb-1" style={{ fontSize: '16px', lineHeight: '1.3' }}>
+                                  <h5 className="card-title fw-bold mb-2" style={{ fontSize: '18px', lineHeight: '1.3' }}>
                                     {item.name}
                                   </h5>
                                   
                                   <p 
-                                    className="card-text text-muted mb-2" 
+                                    className="card-text text-muted mb-3" 
                                     style={{ 
-                                      fontSize: '13px', 
-                                      lineHeight: '1.4',
+                                      fontSize: '14px', 
+                                      lineHeight: '1.5',
                                       display: '-webkit-box',
-                                      WebkitLineClamp: '2',
+                                      WebkitLineClamp: '3',
                                       WebkitBoxOrient: 'vertical',
-                                      overflow: 'hidden'
+                                      overflow: 'hidden',
+                                      height: '63px'
                                     }}
                                   >
                                     {item.description}
                                   </p>
                                   
                                   {item.category && (
-                                    <span className="badge bg-light text-muted" style={{ fontSize: '11px' }}>
+                                    <span className="badge bg-light text-muted mb-3" style={{ fontSize: '12px' }}>
                                       {item.category}
                                     </span>
                                   )}
                                 </div>
                                 
                                 {/* Price and Add Button */}
-                                <div className="d-flex justify-content-between align-items-center mt-2">
-                                  <span className="fw-bold" style={{ fontSize: '16px', color: '#28a745' }}>
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <span className="fw-bold" style={{ fontSize: '20px', color: '#28a745' }}>
                                     ${item.price.toFixed(2)}
                                   </span>
                                   <button
-                                    className="btn btn-outline-primary btn-sm"
-                                    style={{ borderRadius: '8px', fontSize: '14px', fontWeight: '500' }}
+                                    className="btn btn-primary"
+                                    style={{ 
+                                      borderRadius: '12px', 
+                                      fontSize: '14px', 
+                                      fontWeight: '600', 
+                                      padding: '10px 24px',
+                                      transition: 'all 0.2s ease'
+                                    }}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleItemClick(item);
                                     }}
                                   >
-                                    Add
+                                    Add to Cart
                                   </button>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )
-            ));
-          })()
-        )}
+                    </div>
+                  )
+                ));
+              })()
+            )}
 
-        {/* Bottom spacing for fixed cart */}
-        <div style={{ height: cart.length > 0 ? "100px" : "20px" }}></div>
+            {/* Bottom spacing for fixed cart */}
+            <div style={{ height: cart.length > 0 ? "120px" : "40px" }}></div>
+          </div>
+        </div>
       </div>
 
-      {/* Cart Modal */}
+      {/* Cart Summary (sticky bottom) */}
+      {cart.length > 0 && (
+        <div className="position-fixed bottom-0 start-0 w-100 p-3" style={{ zIndex: 1050 }}>
+          <div className="container-fluid" style={{ maxWidth: "1400px", margin: '0 auto' }}>
+            <div className="bg-success rounded-4 shadow-lg" style={{ padding: '20px' }}>
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="text-white">
+                  <div className="fw-bold" style={{ fontSize: '24px' }}>${getCartTotal().toFixed(2)}</div>
+                  <div style={{ fontSize: '16px', opacity: 0.9 }}>
+                    {getCartItemCount()} {getCartItemCount() === 1 ? 'item' : 'items'} in cart
+                  </div>
+                </div>
+                <button 
+                  className="btn btn-light fw-bold"
+                  style={{ 
+                    borderRadius: '12px',
+                    color: '#28a745',
+                    padding: '12px 32px',
+                    fontSize: '16px'
+                  }}
+                  onClick={() => setShowCartModal(true)}
+                >
+                  View Cart 🛒
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* All Modals - same as original */}
       <CartModal
         cart={cart}
         setCart={setCart}
@@ -752,7 +818,6 @@ export default function CustomerMenu() {
         onCheckout={handleCheckout}
       />
 
-      {/* Payment Selection Modal */}
       <PaymentSelectionModal
         isOpen={showPaymentSelectionModal}
         onClose={() => setShowPaymentSelectionModal(false)}
@@ -761,7 +826,6 @@ export default function CustomerMenu() {
         vendor={vendor}
       />
 
-      {/* Payment Modal */}
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
@@ -770,10 +834,10 @@ export default function CustomerMenu() {
         vendor={vendor}
       />
 
-      {/* Item Customization Modal */}
+      {/* Item Customization Modal - same as original but larger */}
       {selectedItem && (
         <div className={`modal ${showItemModal ? 'show d-block' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-lg">
+          <div className="modal-dialog modal-xl">
             <div className="modal-content" style={{ borderRadius: '20px' }}>
               <div className="modal-header border-0 p-4" style={{
                 background: vendor?.primary_color && vendor?.secondary_color 
@@ -794,7 +858,7 @@ export default function CustomerMenu() {
               <div className="modal-body p-4">
                 {/* Item Details */}
                 <div className="row mb-4">
-                  <div className="col-4">
+                  <div className="col-md-4">
                     {selectedItem.image_url ? (
                       <img
                         src={selectedItem.image_url}
@@ -805,15 +869,15 @@ export default function CustomerMenu() {
                     ) : (
                       <div className="bg-light rounded-3 d-flex align-items-center justify-content-center"
                            style={{ height: '150px' }}>
-                        <span className="text-muted fs-1">🍽️</span>
+                        <span className="text-muted" style={{ fontSize: '4rem' }}>🍽️</span>
                       </div>
                     )}
                   </div>
-                  <div className="col-8">
-                    <h5 className="fw-bold">{selectedItem.name}</h5>
-                    <p className="text-muted mb-3">{selectedItem.description}</p>
+                  <div className="col-md-8">
+                    <h3 className="fw-bold mb-3">{selectedItem.name}</h3>
+                    <p className="text-muted mb-4" style={{ fontSize: '16px' }}>{selectedItem.description}</p>
                     <div className="d-flex align-items-center mb-3">
-                      <span className="fs-3 fw-bold me-3" style={{ color: vendor?.primary_color || '#28a745' }}>
+                      <span className="h2 fw-bold me-3" style={{ color: vendor?.primary_color || '#28a745' }}>
                         ${selectedItem.price.toFixed(2)}
                       </span>
                       {selectedItem.category && (
@@ -825,12 +889,12 @@ export default function CustomerMenu() {
 
                 {/* Customization Section */}
                 <div className="mb-4">
-                  <h6 className="fw-bold mb-3">✨ Special Instructions & Customizations</h6>
+                  <h5 className="fw-bold mb-3">✨ Special Instructions & Customizations</h5>
                   <div className="mb-3">
                     <textarea
                       className="form-control"
                       rows="4"
-                      style={{ borderRadius: '12px', resize: 'none' }}
+                      style={{ borderRadius: '12px', resize: 'none', fontSize: '15px' }}
                       placeholder="Add your special requests here...
 
 Examples:
@@ -853,7 +917,7 @@ Examples:
                   
                   {/* Quick Options */}
                   <div className="mb-3">
-                    <h6 className="fw-semibold mb-2">Quick Options:</h6>
+                    <h6 className="fw-semibold mb-3">Quick Options:</h6>
                     <div className="d-flex flex-wrap gap-2">
                       {[
                         'No onions', 'Extra cheese', 'Spicy 🌶️', 'No pickles', 
@@ -863,7 +927,7 @@ Examples:
                           key={option}
                           type="button"
                           className="btn btn-sm btn-outline-secondary"
-                          style={{ borderRadius: '20px', fontSize: '12px' }}
+                          style={{ borderRadius: '20px', fontSize: '14px' }}
                           onClick={() => {
                             const currentText = itemCustomizations;
                             const newText = currentText 
@@ -893,21 +957,22 @@ Examples:
               <div className="modal-footer border-0 p-4">
                 <button 
                   type="button" 
-                  className="btn btn-secondary me-2" 
-                  style={{ borderRadius: '12px' }}
+                  className="btn btn-secondary me-3" 
+                  style={{ borderRadius: '12px', padding: '12px 24px' }}
                   onClick={() => setShowItemModal(false)}
                 >
                   Cancel
                 </button>
                 <button 
                   type="button" 
-                  className="btn btn-lg fw-bold text-white px-4" 
+                  className="btn btn-lg fw-bold text-white" 
                   style={{
                     background: vendor?.primary_color && vendor?.secondary_color 
                       ? `linear-gradient(45deg, ${vendor.primary_color}, ${vendor.secondary_color})` 
                       : 'linear-gradient(45deg, #007bff, #6f42c1)',
                     borderRadius: '15px',
-                    border: 'none'
+                    border: 'none',
+                    padding: '12px 32px'
                   }}
                   onClick={handleAddWithCustomizations}
                 >

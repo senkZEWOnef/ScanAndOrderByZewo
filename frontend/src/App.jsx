@@ -3,9 +3,13 @@ import Home from "./pages/Home";
 import VendorSignup from "./pages/VendorSignup";
 import VendorLogin from "./pages/VendorLogin";
 import VendorDashboard from "./pages/VendorDashboard";
-import CustomerMenu from "./pages/CustomerMenu";
+import CustomerMenu from "./pages/CustomerMenuFullScreen";
 import OrderTracking from "./pages/OrderTracking";
 import Navigation from "./components/Navigation";
+import VendorDebug from "./components/VendorDebug";
+import VendorDashboardCustomize from "./pages/VendorDashboardCustomize";
+import StorageTest from "./components/StorageTest";
+import SimpleImageUpload from "./components/SimpleImageUpload";
 
 function AppContent() {
   const location = useLocation();
@@ -21,6 +25,11 @@ function AppContent() {
         <Route path="/vendor-dashboard" element={<VendorDashboard />} />
         <Route path="/menu/:slug" element={<CustomerMenu />} />
         <Route path="/track/:orderNumber" element={<OrderTracking />} />
+        <Route path="/debug" element={<VendorDebug />} />
+        <Route path="/customize" element={<VendorDashboardCustomize />} />
+        <Route path="/vendor-dashboard/customize" element={<VendorDashboardCustomize />} />
+        <Route path="/storage-test" element={<StorageTest />} />
+        <Route path="/simple-upload" element={<SimpleImageUpload />} />
       </Routes>
     </>
   );
